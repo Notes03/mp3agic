@@ -22,7 +22,6 @@ public class ID3v24Frame extends ID3v2Frame {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ID3v24Frame)) return false;
-		return super.equals(obj);
+		return obj instanceof ID3v24Frame && super.equals(obj);
 	}
 }

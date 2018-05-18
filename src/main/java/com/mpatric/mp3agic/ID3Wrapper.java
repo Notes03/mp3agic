@@ -273,6 +273,12 @@ public class ID3Wrapper {
 		}
 	}
 
+	public void clearLyrics() {
+		if (id3v2Tag != null) {
+			id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_TEXT_LYRICS);
+		}
+	}
+
 	public String getLyrics() {
 		if (id3v2Tag != null) {
 			return id3v2Tag.getLyrics();
@@ -300,5 +306,23 @@ public class ID3Wrapper {
 		if (id3v2Tag != null) {
 			id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_ENCODER);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		ID3Wrapper that = (ID3Wrapper) o;
+
+		if (id3v1Tag != null ? !id3v1Tag.equals(that.id3v1Tag) : that.id3v1Tag != null) return false;
+		return id3v2Tag != null ? id3v2Tag.equals(that.id3v2Tag) : that.id3v2Tag == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id3v1Tag != null ? id3v1Tag.hashCode() : 0;
+		result = 31 * result + (id3v2Tag != null ? id3v2Tag.hashCode() : 0);
+		return result;
 	}
 }
