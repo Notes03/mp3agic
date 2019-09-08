@@ -1363,6 +1363,11 @@ public class ID3WrapperTest {
 		}
 
 		@Override
+		public void addImage(byte[] image, String mimeType, byte imageType, String imageDescription) {
+
+		}
+
+		@Override
 		public void clearAlbumImage() {
 
 		}

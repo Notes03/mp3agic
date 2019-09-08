@@ -1047,6 +1047,18 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 	}
 
 	@Override
+	public void addImage(byte[] image, String mimeType, byte imageType, String imageDescription) {
+		if (image != null && image.length > 0 && mimeType != null && mimeType.length() > 0) {
+			invalidateDataLength();
+			ID3v2PictureFrameData frameData = new ID3v2PictureFrameData(
+				useFrameUnsynchronisation(), mimeType, imageType,
+				null == imageDescription ? null : new EncodedText(imageDescription),
+				image);
+			addFrame(createFrame(ID_IMAGE, frameData.toBytes()), false);
+		}
+	}
+
+	@Override
 	public void clearAlbumImage() {
 		clearFrameSet(obseleteFormat ? ID_IMAGE_OBSELETE : ID_IMAGE);
 	}
