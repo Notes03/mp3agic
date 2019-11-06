@@ -27,6 +27,77 @@ public class ID3v2PictureFrameData extends AbstractID3v2FrameData {
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	public byte getPictureType() {
+		return pictureType;
+	}
+
+	public void setPictureType(byte pictureType) {
+		this.pictureType = pictureType;
+	}
+
+	public EncodedText getDescription() {
+		return description;
+	}
+
+	public void setDescription(EncodedText description) {
+		this.description = description;
+	}
+
+	public byte[] getImageData() {
+		return imageData;
+	}
+
+	public void setImageData(byte[] imageData) {
+		this.imageData = imageData;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+			+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + Arrays.hashCode(imageData);
+		result = prime * result
+			+ ((mimeType == null) ? 0 : mimeType.hashCode());
+		result = prime * result + pictureType;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ID3v2PictureFrameData other = (ID3v2PictureFrameData) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (!Arrays.equals(imageData, other.imageData))
+			return false;
+		if (mimeType == null) {
+			if (other.mimeType != null)
+				return false;
+		} else if (!mimeType.equals(other.mimeType))
+			return false;
+		if (pictureType != other.pictureType)
+			return false;
+		return true;
+	}
+
 	@Override
 	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
 		int marker = BufferTools.indexOfTerminator(bytes, 1, 1);
@@ -89,76 +160,5 @@ public class ID3v2PictureFrameData extends AbstractID3v2FrameData {
 		else length++;
 		if (imageData != null) length += imageData.length;
 		return length;
-	}
-
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
-
-	public byte getPictureType() {
-		return pictureType;
-	}
-
-	public void setPictureType(byte pictureType) {
-		this.pictureType = pictureType;
-	}
-
-	public EncodedText getDescription() {
-		return description;
-	}
-
-	public void setDescription(EncodedText description) {
-		this.description = description;
-	}
-
-	public byte[] getImageData() {
-		return imageData;
-	}
-
-	public void setImageData(byte[] imageData) {
-		this.imageData = imageData;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + Arrays.hashCode(imageData);
-		result = prime * result
-				+ ((mimeType == null) ? 0 : mimeType.hashCode());
-		result = prime * result + pictureType;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ID3v2PictureFrameData other = (ID3v2PictureFrameData) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (!Arrays.equals(imageData, other.imageData))
-			return false;
-		if (mimeType == null) {
-			if (other.mimeType != null)
-				return false;
-		} else if (!mimeType.equals(other.mimeType))
-			return false;
-		if (pictureType != other.pictureType)
-			return false;
-		return true;
 	}
 }

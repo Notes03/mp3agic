@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.EnumSet;
 
 public class Mp3File extends FileWrapper {
 
@@ -84,22 +87,152 @@ public class Mp3File extends FileWrapper {
 		init(bufferLength, scanFile);
 	}
 
-	private void init(int bufferLength, boolean scanFile) throws IOException, UnsupportedTagException, InvalidDataException {
-		if (bufferLength < MINIMUM_BUFFER_LENGTH + 1) throw new IllegalArgumentException("Buffer too small");
+	public int getFrameCount() {
+		return frameCount;
+	}
 
-		this.bufferLength = bufferLength;
-		this.scanFile = scanFile;
+	public int getStartOffset() {
+		return startOffset;
+	}
 
-		try (SeekableByteChannel seekableByteChannel = Files.newByteChannel(path, StandardOpenOption.READ)) {
-			initId3v1Tag(seekableByteChannel);
-			scanFile(seekableByteChannel);
-			if (startOffset < 0) {
-				throw new InvalidDataException("No mpegs frames found");
+	public int getEndOffset() {
+		return endOffset;
+	}
+
+	public long getLengthInMilliseconds() {
+		return (long) (((endOffset - startOffset) * (8.0 / bitrate)) + 0.5);
+	}
+
+	public long getLengthInSeconds() {
+		return ((getLengthInMilliseconds() + 500) / 1000);
+	}
+
+	public boolean isVbr() {
+		return bitrates.size() > 1;
+	}
+
+	public int getBitrate() {
+		return (int) (bitrate + 0.5);
+	}
+
+	public Map<Integer, MutableInteger> getBitrates() {
+		return bitrates;
+	}
+
+	public String getChannelMode() {
+		return channelMode;
+	}
+
+	public boolean isCopyright() {
+		return copyright;
+	}
+
+	public String getEmphasis() {
+		return emphasis;
+	}
+
+	public String getLayer() {
+		return layer;
+	}
+
+	public String getModeExtension() {
+		return modeExtension;
+	}
+
+	public boolean isOriginal() {
+		return original;
+	}
+
+	public int getSampleRate() {
+		return sampleRate;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public boolean hasXingFrame() {
+		return (xingOffset >= 0);
+	}
+
+	public int getXingOffset() {
+		return xingOffset;
+	}
+
+	public int getXingBitrate() {
+		return xingBitrate;
+	}
+
+	public boolean hasId3v1Tag() {
+		return id3v1Tag != null;
+	}
+
+	public ID3v1 getId3v1Tag() {
+		return id3v1Tag;
+	}
+
+	public void setId3v1Tag(ID3v1 id3v1Tag) {
+		this.id3v1Tag = id3v1Tag;
+	}
+
+	public void removeId3v1Tag() {
+		this.id3v1Tag = null;
+	}
+
+	public boolean hasId3v2Tag() {
+		return id3v2Tag != null;
+	}
+
+	public ID3v2 getId3v2Tag() {
+		return id3v2Tag;
+	}
+
+	public void setId3v2Tag(ID3v2 id3v2Tag) {
+		this.id3v2Tag = id3v2Tag;
+	}
+
+	public void removeId3v2Tag() {
+		this.id3v2Tag = null;
+	}
+
+	public boolean hasCustomTag() {
+		return customTag != null;
+	}
+
+	public byte[] getCustomTag() {
+		return customTag;
+	}
+
+	public void setCustomTag(byte[] customTag) {
+		this.customTag = customTag;
+	}
+
+	public void removeCustomTag() {
+		this.customTag = null;
+	}
+
+	public void save(String newFilename) throws IOException, NotSupportedException {
+		if (path.toAbsolutePath().compareTo(Paths.get(newFilename).toAbsolutePath()) == 0) {
+			throw new IllegalArgumentException("Save filename same as source filename");
+		}
+		try (SeekableByteChannel saveFile = Files.newByteChannel(Paths.get(newFilename), EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE))) {
+			if (hasId3v2Tag()) {
+				ByteBuffer byteBuffer = ByteBuffer.wrap(id3v2Tag.toBytes());
+				byteBuffer.rewind();
+				saveFile.write(byteBuffer);
 			}
-			initId3v2Tag(seekableByteChannel);
-			if (scanFile) {
-				initCustomTag(seekableByteChannel);
+			saveMpegFrames(saveFile);
+			if (hasCustomTag()) {
+				ByteBuffer byteBuffer = ByteBuffer.wrap(customTag);
+				byteBuffer.rewind();
+				saveFile.write(byteBuffer);
 			}
+			if (hasId3v1Tag()) {
+				ByteBuffer byteBuffer = ByteBuffer.wrap(id3v1Tag.toBytes());
+				byteBuffer.rewind();
+				saveFile.write(byteBuffer);
+			}
+			saveFile.close();
 		}
 	}
 
@@ -122,6 +255,25 @@ public class Mp3File extends FileWrapper {
 			// do nothing
 		}
 		return 0;
+	}
+
+	private void init(int bufferLength, boolean scanFile) throws IOException, UnsupportedTagException, InvalidDataException {
+		if (bufferLength < MINIMUM_BUFFER_LENGTH + 1) throw new IllegalArgumentException("Buffer too small");
+
+		this.bufferLength = bufferLength;
+		this.scanFile = scanFile;
+
+		try (SeekableByteChannel seekableByteChannel = Files.newByteChannel(path, StandardOpenOption.READ)) {
+			initId3v1Tag(seekableByteChannel);
+			scanFile(seekableByteChannel);
+			if (startOffset < 0) {
+				throw new InvalidDataException("No mpegs frames found");
+			}
+			initId3v2Tag(seekableByteChannel);
+			if (scanFile) {
+				initCustomTag(seekableByteChannel);
+			}
+		}
 	}
 
 	private void scanFile(SeekableByteChannel seekableByteChannel) throws IOException, InvalidDataException {
@@ -313,155 +465,6 @@ public class Mp3File extends FileWrapper {
 			int bytesRead = seekableByteChannel.read(byteBuffer);
 			customTag = byteBuffer.array();
 			if (bytesRead < bufferLength) throw new IOException("Not enough bytes read");
-		}
-	}
-
-	public int getFrameCount() {
-		return frameCount;
-	}
-
-	public int getStartOffset() {
-		return startOffset;
-	}
-
-	public int getEndOffset() {
-		return endOffset;
-	}
-
-	public long getLengthInMilliseconds() {
-		return (long) (((endOffset - startOffset) * (8.0 / bitrate)) + 0.5);
-	}
-
-	public long getLengthInSeconds() {
-		return ((getLengthInMilliseconds() + 500) / 1000);
-	}
-
-	public boolean isVbr() {
-		return bitrates.size() > 1;
-	}
-
-	public int getBitrate() {
-		return (int) (bitrate + 0.5);
-	}
-
-	public Map<Integer, MutableInteger> getBitrates() {
-		return bitrates;
-	}
-
-	public String getChannelMode() {
-		return channelMode;
-	}
-
-	public boolean isCopyright() {
-		return copyright;
-	}
-
-	public String getEmphasis() {
-		return emphasis;
-	}
-
-	public String getLayer() {
-		return layer;
-	}
-
-	public String getModeExtension() {
-		return modeExtension;
-	}
-
-	public boolean isOriginal() {
-		return original;
-	}
-
-	public int getSampleRate() {
-		return sampleRate;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public boolean hasXingFrame() {
-		return (xingOffset >= 0);
-	}
-
-	public int getXingOffset() {
-		return xingOffset;
-	}
-
-	public int getXingBitrate() {
-		return xingBitrate;
-	}
-
-	public boolean hasId3v1Tag() {
-		return id3v1Tag != null;
-	}
-
-	public ID3v1 getId3v1Tag() {
-		return id3v1Tag;
-	}
-
-	public void setId3v1Tag(ID3v1 id3v1Tag) {
-		this.id3v1Tag = id3v1Tag;
-	}
-
-	public void removeId3v1Tag() {
-		this.id3v1Tag = null;
-	}
-
-	public boolean hasId3v2Tag() {
-		return id3v2Tag != null;
-	}
-
-	public ID3v2 getId3v2Tag() {
-		return id3v2Tag;
-	}
-
-	public void setId3v2Tag(ID3v2 id3v2Tag) {
-		this.id3v2Tag = id3v2Tag;
-	}
-
-	public void removeId3v2Tag() {
-		this.id3v2Tag = null;
-	}
-
-	public boolean hasCustomTag() {
-		return customTag != null;
-	}
-
-	public byte[] getCustomTag() {
-		return customTag;
-	}
-
-	public void setCustomTag(byte[] customTag) {
-		this.customTag = customTag;
-	}
-
-	public void removeCustomTag() {
-		this.customTag = null;
-	}
-
-	public void save(String newFilename) throws IOException, NotSupportedException {
-		if (path.toAbsolutePath().compareTo(Paths.get(newFilename).toAbsolutePath()) == 0) {
-			throw new IllegalArgumentException("Save filename same as source filename");
-		}
-		try (SeekableByteChannel saveFile = Files.newByteChannel(Paths.get(newFilename), EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE))) {
-			if (hasId3v2Tag()) {
-				ByteBuffer byteBuffer = ByteBuffer.wrap(id3v2Tag.toBytes());
-				byteBuffer.rewind();
-				saveFile.write(byteBuffer);
-			}
-			saveMpegFrames(saveFile);
-			if (hasCustomTag()) {
-				ByteBuffer byteBuffer = ByteBuffer.wrap(customTag);
-				byteBuffer.rewind();
-				saveFile.write(byteBuffer);
-			}
-			if (hasId3v1Tag()) {
-				ByteBuffer byteBuffer = ByteBuffer.wrap(id3v1Tag.toBytes());
-				byteBuffer.rewind();
-				saveFile.write(byteBuffer);
-			}
-			saveFile.close();
 		}
 	}
 

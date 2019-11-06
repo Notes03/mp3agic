@@ -8,27 +8,6 @@ public abstract class AbstractID3v2FrameData {
 		this.unsynchronisation = unsynchronisation;
 	}
 
-	protected final void synchroniseAndUnpackFrameData(byte[] bytes) throws InvalidDataException {
-		if (unsynchronisation && BufferTools.sizeSynchronisationWouldSubtract(bytes) > 0) {
-			byte[] synchronisedBytes = BufferTools.synchroniseBuffer(bytes);
-			unpackFrameData(synchronisedBytes);
-		} else {
-			unpackFrameData(bytes);
-		}
-	}
-
-	protected byte[] packAndUnsynchroniseFrameData() {
-		byte[] bytes = packFrameData();
-		if (unsynchronisation && BufferTools.sizeUnsynchronisationWouldAdd(bytes) > 0) {
-			return BufferTools.unsynchroniseBuffer(bytes);
-		}
-		return bytes;
-	}
-
-	protected byte[] toBytes() {
-		return packAndUnsynchroniseFrameData();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -49,6 +28,27 @@ public abstract class AbstractID3v2FrameData {
 		if (unsynchronisation != other.unsynchronisation)
 			return false;
 		return true;
+	}
+
+	protected final void synchroniseAndUnpackFrameData(byte[] bytes) throws InvalidDataException {
+		if (unsynchronisation && BufferTools.sizeSynchronisationWouldSubtract(bytes) > 0) {
+			byte[] synchronisedBytes = BufferTools.synchroniseBuffer(bytes);
+			unpackFrameData(synchronisedBytes);
+		} else {
+			unpackFrameData(bytes);
+		}
+	}
+
+	protected byte[] packAndUnsynchroniseFrameData() {
+		byte[] bytes = packFrameData();
+		if (unsynchronisation && BufferTools.sizeUnsynchronisationWouldAdd(bytes) > 0) {
+			return BufferTools.unsynchroniseBuffer(bytes);
+		}
+		return bytes;
+	}
+
+	protected byte[] toBytes() {
+		return packAndUnsynchroniseFrameData();
 	}
 
 	protected abstract void unpackFrameData(byte[] bytes) throws InvalidDataException;

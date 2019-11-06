@@ -34,13 +34,6 @@ public class FileWrapper {
 		init();
 	}
 
-	private void init() throws IOException {
-		if (!Files.exists(path)) throw new FileNotFoundException("File not found " + path);
-		if (!Files.isReadable(path)) throw new IOException("File not readable");
-		length = Files.size(path);
-		lastModified = Files.getLastModifiedTime(path).to(TimeUnit.MILLISECONDS);
-	}
-
 	public String getFilename() {
 		return path.toString();
 	}
@@ -51,5 +44,12 @@ public class FileWrapper {
 
 	public long getLastModified() {
 		return lastModified;
+	}
+
+	private void init() throws IOException {
+		if (!Files.exists(path)) throw new FileNotFoundException("File not found " + path);
+		if (!Files.isReadable(path)) throw new IOException("File not readable");
+		length = Files.size(path);
+		lastModified = Files.getLastModifiedTime(path).to(TimeUnit.MILLISECONDS);
 	}
 }

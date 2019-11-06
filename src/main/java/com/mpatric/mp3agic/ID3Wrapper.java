@@ -189,17 +189,17 @@ public class ID3Wrapper {
 		}
 	}
 
-	public void setAlbumArtist(String albumArtist) {
-		if (id3v2Tag != null) {
-			id3v2Tag.setAlbumArtist(albumArtist);
-		}
-	}
-
 	public String getAlbumArtist() {
 		if (id3v2Tag != null) {
 			return id3v2Tag.getAlbumArtist();
 		} else {
 			return null;
+		}
+	}
+
+	public void setAlbumArtist(String albumArtist) {
+		if (id3v2Tag != null) {
+			id3v2Tag.setAlbumArtist(albumArtist);
 		}
 	}
 
@@ -267,12 +267,6 @@ public class ID3Wrapper {
 		}
 	}
 
-	public void setLyrics(String lyrics) {
-		if (id3v2Tag != null) {
-			id3v2Tag.setLyrics(lyrics);
-		}
-	}
-
 	public void clearLyrics() {
 		if (id3v2Tag != null) {
 			id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_TEXT_LYRICS);
@@ -284,6 +278,12 @@ public class ID3Wrapper {
 			return id3v2Tag.getLyrics();
 		} else {
 			return null;
+		}
+	}
+
+	public void setLyrics(String lyrics) {
+		if (id3v2Tag != null) {
+			id3v2Tag.setLyrics(lyrics);
 		}
 	}
 

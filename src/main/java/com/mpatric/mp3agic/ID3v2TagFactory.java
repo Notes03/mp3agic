@@ -16,14 +16,6 @@ public class ID3v2TagFactory {
 		throw new UnsupportedTagException("Tag version not supported");
 	}
 
-	private static AbstractID3v2Tag createID3v22Tag(byte[] bytes) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
-		ID3v22Tag tag = new ID3v22Tag(bytes);
-		if (tag.getFrameSets().isEmpty()) {
-			tag = new ID3v22Tag(bytes, true);
-		}
-		return tag;
-	}
-
 	public static void sanityCheckTag(byte[] bytes) throws NoSuchTagException, UnsupportedTagException {
 		if (bytes.length < AbstractID3v2Tag.HEADER_LENGTH) {
 			throw new NoSuchTagException("Buffer too short");
@@ -36,5 +28,13 @@ public class ID3v2TagFactory {
 			int minorVersion = bytes[AbstractID3v2Tag.MINOR_VERSION_OFFSET];
 			throw new UnsupportedTagException("Unsupported version 2." + majorVersion + "." + minorVersion);
 		}
+	}
+
+	private static AbstractID3v2Tag createID3v22Tag(byte[] bytes) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
+		ID3v22Tag tag = new ID3v22Tag(bytes);
+		if (tag.getFrameSets().isEmpty()) {
+			tag = new ID3v22Tag(bytes, true);
+		}
+		return tag;
 	}
 }

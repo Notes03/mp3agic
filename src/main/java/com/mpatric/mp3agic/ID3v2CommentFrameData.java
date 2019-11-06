@@ -29,6 +29,69 @@ public class ID3v2CommentFrameData extends AbstractID3v2FrameData {
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public EncodedText getComment() {
+		return comment;
+	}
+
+	public void setComment(EncodedText comment) {
+		this.comment = comment;
+	}
+
+	public EncodedText getDescription() {
+		return description;
+	}
+
+	public void setDescription(EncodedText description) {
+		this.description = description;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+		result = prime * result
+			+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result
+			+ ((language == null) ? 0 : language.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ID3v2CommentFrameData other = (ID3v2CommentFrameData) obj;
+		if (comment == null) {
+			if (other.comment != null)
+				return false;
+		} else if (!comment.equals(other.comment))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (language == null) {
+			if (other.language != null)
+				return false;
+		} else if (!language.equals(other.language))
+			return false;
+		return true;
+	}
+
 	@Override
 	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
 		try {
@@ -88,68 +151,5 @@ public class ID3v2CommentFrameData extends AbstractID3v2FrameData {
 		else length += comment != null ? comment.getTerminator().length : 1;
 		if (comment != null) length += comment.toBytes(true, false).length;
 		return length;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
-	public EncodedText getComment() {
-		return comment;
-	}
-
-	public void setComment(EncodedText comment) {
-		this.comment = comment;
-	}
-
-	public EncodedText getDescription() {
-		return description;
-	}
-
-	public void setDescription(EncodedText description) {
-		this.description = description;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result
-				+ ((language == null) ? 0 : language.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ID3v2CommentFrameData other = (ID3v2CommentFrameData) obj;
-		if (comment == null) {
-			if (other.comment != null)
-				return false;
-		} else if (!comment.equals(other.comment))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (language == null) {
-			if (other.language != null)
-				return false;
-		} else if (!language.equals(other.language))
-			return false;
-		return true;
 	}
 }

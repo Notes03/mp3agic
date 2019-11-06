@@ -21,26 +21,26 @@ public class EncodedText {
 	public static final String CHARSET_UTF_8 = "UTF-8";
 
 	private static final String[] characterSets = {
-			CHARSET_ISO_8859_1,
-			CHARSET_UTF_16,
-			CHARSET_UTF_16BE,
-			CHARSET_UTF_8
+		CHARSET_ISO_8859_1,
+		CHARSET_UTF_16,
+		CHARSET_UTF_16BE,
+		CHARSET_UTF_8
 	};
 
 	private static final byte[] textEncodingFallback = {0, 2, 1, 3};
 
 	private static final byte[][] boms = {
-			{},
-			{(byte) 0xff, (byte) 0xfe},
-			{(byte) 0xfe, (byte) 0xff},
-			{}
+		{},
+		{(byte) 0xff, (byte) 0xfe},
+		{(byte) 0xfe, (byte) 0xff},
+		{}
 	};
 
 	private static final byte[][] terminators = {
-			{0},
-			{0, 0},
-			{0, 0},
-			{0}
+		{0},
+		{0, 0},
+		{0, 0},
+		{0}
 	};
 
 	private byte[] value;
@@ -49,7 +49,7 @@ public class EncodedText {
 	public EncodedText(byte textEncoding, byte[] value) {
 		// if encoding type 1 and big endian BOM is present, switch to big endian
 		if ((textEncoding == TEXT_ENCODING_UTF_16) &&
-				(textEncodingForBytesFromBOM(value) == TEXT_ENCODING_UTF_16BE)) {
+			(textEncodingForBytesFromBOM(value) == TEXT_ENCODING_UTF_16BE)) {
 			this.textEncoding = TEXT_ENCODING_UTF_16BE;
 		} else {
 			this.textEncoding = textEncoding;
@@ -105,32 +105,19 @@ public class EncodedText {
 		}
 	}
 
-	private void stripBomAndTerminator() {
-		int leadingCharsToRemove = 0;
-		if (value.length >= 2 && ((value[0] == (byte) 0xfe && value[1] == (byte) 0xff) || (value[0] == (byte) 0xff && value[1] == (byte) 0xfe))) {
-			leadingCharsToRemove = 2;
-		} else if (value.length >= 3 && (value[0] == (byte) 0xef && value[1] == (byte) 0xbb && value[2] == (byte) 0xbf)) {
-			leadingCharsToRemove = 3;
-		}
-		int trailingCharsToRemove = 0;
-		byte[] terminator = terminators[textEncoding];
-		if (value.length - leadingCharsToRemove >= terminator.length) {
-			boolean haveTerminator = true;
-			for (int i = 0; i < terminator.length; i++) {
-				if (value[value.length - terminator.length + i] != terminator[i]) {
-					haveTerminator = false;
-					break;
-				}
-			}
-			if (haveTerminator) trailingCharsToRemove = terminator.length;
-		}
-		if (leadingCharsToRemove + trailingCharsToRemove > 0) {
-			int newLength = value.length - leadingCharsToRemove - trailingCharsToRemove;
-			byte[] newValue = new byte[newLength];
-			if (newLength > 0) {
-				System.arraycopy(value, leadingCharsToRemove, newValue, 0, newValue.length);
-			}
-			value = newValue;
+	private static String bytesToString(byte[] bytes, String characterSet) throws CharacterCodingException {
+		CharBuffer cbuf = bytesToCharBuffer(bytes, characterSet);
+		String s = cbuf.toString();
+		int length = s.indexOf(0);
+		if (length == -1) return s;
+		return s.substring(0, length);
+	}
+
+	private static byte[] stringToBytes(String s, String characterSet) {
+		try {
+			return charBufferToBytes(CharBuffer.wrap(s), characterSet);
+		} catch (CharacterCodingException e) {
+			return null;
 		}
 	}
 
@@ -230,26 +217,10 @@ public class EncodedText {
 		return true;
 	}
 
-	private static String bytesToString(byte[] bytes, String characterSet) throws CharacterCodingException {
-		CharBuffer cbuf = bytesToCharBuffer(bytes, characterSet);
-		String s = cbuf.toString();
-		int length = s.indexOf(0);
-		if (length == -1) return s;
-		return s.substring(0, length);
-	}
-
 	protected static CharBuffer bytesToCharBuffer(byte[] bytes, String characterSet) throws CharacterCodingException {
 		Charset charset = Charset.forName(characterSet);
 		CharsetDecoder decoder = charset.newDecoder();
 		return decoder.decode(ByteBuffer.wrap(bytes));
-	}
-
-	private static byte[] stringToBytes(String s, String characterSet) {
-		try {
-			return charBufferToBytes(CharBuffer.wrap(s), characterSet);
-		} catch (CharacterCodingException e) {
-			return null;
-		}
 	}
 
 	protected static byte[] charBufferToBytes(CharBuffer charBuffer, String characterSet) throws CharacterCodingException {
@@ -257,5 +228,34 @@ public class EncodedText {
 		CharsetEncoder encoder = charset.newEncoder();
 		ByteBuffer byteBuffer = encoder.encode(charBuffer);
 		return BufferTools.copyBuffer(byteBuffer.array(), 0, byteBuffer.limit());
+	}
+
+	private void stripBomAndTerminator() {
+		int leadingCharsToRemove = 0;
+		if (value.length >= 2 && ((value[0] == (byte) 0xfe && value[1] == (byte) 0xff) || (value[0] == (byte) 0xff && value[1] == (byte) 0xfe))) {
+			leadingCharsToRemove = 2;
+		} else if (value.length >= 3 && (value[0] == (byte) 0xef && value[1] == (byte) 0xbb && value[2] == (byte) 0xbf)) {
+			leadingCharsToRemove = 3;
+		}
+		int trailingCharsToRemove = 0;
+		byte[] terminator = terminators[textEncoding];
+		if (value.length - leadingCharsToRemove >= terminator.length) {
+			boolean haveTerminator = true;
+			for (int i = 0; i < terminator.length; i++) {
+				if (value[value.length - terminator.length + i] != terminator[i]) {
+					haveTerminator = false;
+					break;
+				}
+			}
+			if (haveTerminator) trailingCharsToRemove = terminator.length;
+		}
+		if (leadingCharsToRemove + trailingCharsToRemove > 0) {
+			int newLength = value.length - leadingCharsToRemove - trailingCharsToRemove;
+			byte[] newValue = new byte[newLength];
+			if (newLength > 0) {
+				System.arraycopy(value, leadingCharsToRemove, newValue, 0, newValue.length);
+			}
+			value = newValue;
+		}
 	}
 }

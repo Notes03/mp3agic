@@ -1,4 +1,3 @@
-
 package com.mpatric.mp3agic;
 
 import java.nio.ByteBuffer;
@@ -27,79 +26,13 @@ public class ID3v2ChapterTOCFrameData extends AbstractID3v2FrameData {
 	}
 
 	public ID3v2ChapterTOCFrameData(boolean unsynchronisation, byte[] bytes)
-			throws InvalidDataException {
+		throws InvalidDataException {
 		super(unsynchronisation);
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
-	@Override
-	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
-		ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		id = ByteBufferUtils.extractNullTerminatedString(bb);
-
-		byte flags = bb.get();
-		if ((flags & 0x01) == 0x01) {
-			isRoot = true;
-		}
-		if ((flags & 0x02) == 0x02) {
-			isOrdered = true;
-		}
-
-		int childCount = bb.get(); // TODO: 0xFF -> int = 255; byte = -128;
-
-		children = new String[childCount];
-
-		for (int i = 0; i < childCount; i++) {
-			children[i] = ByteBufferUtils.extractNullTerminatedString(bb);
-		}
-
-		for (int offset = bb.position(); offset < bytes.length; ) {
-			ID3v2Frame frame = new ID3v2Frame(bytes, offset);
-			offset += frame.getLength();
-			subframes.add(frame);
-		}
-
-	}
-
 	public void addSubframe(String id, AbstractID3v2FrameData frame) {
 		subframes.add(new ID3v2Frame(id, frame.toBytes()));
-	}
-
-	@Override
-	protected byte[] packFrameData() {
-		ByteBuffer bb = ByteBuffer.allocate(getLength());
-		bb.put(id.getBytes());
-		bb.put((byte) 0);
-		bb.put(getFlags());
-		bb.put((byte) children.length);
-
-		for (String child : children) {
-			bb.put(child.getBytes());
-			bb.put((byte) 0);
-		}
-
-		for (ID3v2Frame frame : subframes) {
-			try {
-				bb.put(frame.toBytes());
-			} catch (NotSupportedException e) {
-				e.printStackTrace();
-			}
-		}
-		return bb.array();
-	}
-
-	private byte getFlags() {
-		byte b = 0;
-
-		if (isRoot) {
-			b |= 0x01;
-		}
-
-		if (isOrdered) {
-			b |= 0x02;
-		}
-		return b;
 	}
 
 	public boolean isRoot() {
@@ -153,24 +86,6 @@ public class ID3v2ChapterTOCFrameData extends AbstractID3v2FrameData {
 	}
 
 	@Override
-	protected int getLength() {
-		int length = 3;
-		if (id != null) length += id.length();
-		if (children != null) {
-			length += children.length;
-			for (String child : children) {
-				length += child.length();
-			}
-		}
-		if (subframes != null) {
-			for (ID3v2Frame frame : subframes) {
-				length += frame.getLength();
-			}
-		}
-		return length;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ID3v2ChapterTOCFrameData [isRoot=");
@@ -196,7 +111,7 @@ public class ID3v2ChapterTOCFrameData extends AbstractID3v2FrameData {
 		result = prime * result + (isOrdered ? 1231 : 1237);
 		result = prime * result + (isRoot ? 1231 : 1237);
 		result = prime * result
-				+ ((subframes == null) ? 0 : subframes.hashCode());
+			+ ((subframes == null) ? 0 : subframes.hashCode());
 		return result;
 	}
 
@@ -226,5 +141,89 @@ public class ID3v2ChapterTOCFrameData extends AbstractID3v2FrameData {
 		} else if (!subframes.equals(other.subframes))
 			return false;
 		return true;
+	}
+
+	@Override
+	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+
+		id = ByteBufferUtils.extractNullTerminatedString(bb);
+
+		byte flags = bb.get();
+		if ((flags & 0x01) == 0x01) {
+			isRoot = true;
+		}
+		if ((flags & 0x02) == 0x02) {
+			isOrdered = true;
+		}
+
+		int childCount = bb.get(); // TODO: 0xFF -> int = 255; byte = -128;
+
+		children = new String[childCount];
+
+		for (int i = 0; i < childCount; i++) {
+			children[i] = ByteBufferUtils.extractNullTerminatedString(bb);
+		}
+
+		for (int offset = bb.position(); offset < bytes.length; ) {
+			ID3v2Frame frame = new ID3v2Frame(bytes, offset);
+			offset += frame.getLength();
+			subframes.add(frame);
+		}
+
+	}
+
+	@Override
+	protected byte[] packFrameData() {
+		ByteBuffer bb = ByteBuffer.allocate(getLength());
+		bb.put(id.getBytes());
+		bb.put((byte) 0);
+		bb.put(getFlags());
+		bb.put((byte) children.length);
+
+		for (String child : children) {
+			bb.put(child.getBytes());
+			bb.put((byte) 0);
+		}
+
+		for (ID3v2Frame frame : subframes) {
+			try {
+				bb.put(frame.toBytes());
+			} catch (NotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return bb.array();
+	}
+
+	@Override
+	protected int getLength() {
+		int length = 3;
+		if (id != null) length += id.length();
+		if (children != null) {
+			length += children.length;
+			for (String child : children) {
+				length += child.length();
+			}
+		}
+		if (subframes != null) {
+			for (ID3v2Frame frame : subframes) {
+				length += frame.getLength();
+			}
+		}
+		return length;
+	}
+
+	private byte getFlags() {
+		byte b = 0;
+
+		if (isRoot) {
+			b |= 0x01;
+		}
+
+		if (isOrdered) {
+			b |= 0x02;
+		}
+		return b;
 	}
 }

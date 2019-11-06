@@ -16,6 +16,29 @@ public class ID3v24Tag extends AbstractID3v2Tag {
 	}
 
 	@Override
+	public void setGenreDescription(String text) {
+		ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(text));
+		ID3v2FrameSet frameSet = getFrameSets().computeIfAbsent(ID_GENRE, ID3v2FrameSet::new);
+		frameSet.clear();
+		frameSet.addFrame(createFrame(ID_GENRE, frameData.toBytes()));
+	}
+
+	public String getRecordingTime() {
+		ID3v2TextFrameData frameData = extractTextFrameData(ID_RECTIME);
+		if (frameData != null && frameData.getText() != null)
+			return frameData.getText().toString();
+		return null;
+	}
+
+	public void setRecordingTime(String recTime) {
+		if (recTime != null && recTime.length() > 0) {
+			invalidateDataLength();
+			ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(recTime));
+			addFrame(createFrame(ID_RECTIME, frameData.toBytes()), true);
+		}
+	}
+
+	@Override
 	protected void unpackFlags(byte[] buffer) {
 		unsynchronisation = BufferTools.checkBit(buffer[FLAGS_OFFSET], UNSYNCHRONISATION_BIT);
 		extendedHeader = BufferTools.checkBit(buffer[FLAGS_OFFSET], EXTENDED_HEADER_BIT);
@@ -36,6 +59,12 @@ public class ID3v24Tag extends AbstractID3v2Tag {
 		return unsynchronisation;
 	}
 
+
+	/*
+	 * 'recording time' (TDRC) replaces the deprecated frames 'TDAT - Date', 'TIME - Time',
+	 * 'TRDA - Recording dates' and 'TYER - Year' in 4.0
+	 */
+
 	@Override
 	protected ID3v2Frame createFrame(byte[] buffer, int currentOffset) throws InvalidDataException {
 		return new ID3v24Frame(buffer, currentOffset);
@@ -44,35 +73,6 @@ public class ID3v24Tag extends AbstractID3v2Tag {
 	@Override
 	protected ID3v2Frame createFrame(String id, byte[] data) {
 		return new ID3v24Frame(id, data);
-	}
-
-	@Override
-	public void setGenreDescription(String text) {
-		ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(text));
-		ID3v2FrameSet frameSet = getFrameSets().computeIfAbsent(ID_GENRE, ID3v2FrameSet::new);
-		frameSet.clear();
-		frameSet.addFrame(createFrame(ID_GENRE, frameData.toBytes()));
-	}
-
-
-	/*
-	 * 'recording time' (TDRC) replaces the deprecated frames 'TDAT - Date', 'TIME - Time',
-	 * 'TRDA - Recording dates' and 'TYER - Year' in 4.0
-	 */
-
-	public String getRecordingTime() {
-		ID3v2TextFrameData frameData = extractTextFrameData(ID_RECTIME);
-		if (frameData != null && frameData.getText() != null)
-			return frameData.getText().toString();
-		return null;
-	}
-
-	public void setRecordingTime(String recTime) {
-		if (recTime != null && recTime.length() > 0) {
-			invalidateDataLength();
-			ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(recTime));
-			addFrame(createFrame(ID_RECTIME, frameData.toBytes()), true);
-		}
 	}
 
 }

@@ -18,31 +18,6 @@ public class ID3v2TextFrameData extends AbstractID3v2FrameData {
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
-	@Override
-	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
-		text = new EncodedText(bytes[0], BufferTools.copyBuffer(bytes, 1, bytes.length - 1));
-	}
-
-	@Override
-	protected byte[] packFrameData() {
-		byte[] bytes = new byte[getLength()];
-		if (text != null) {
-			bytes[0] = text.getTextEncoding();
-			byte[] textBytes = text.toBytes(true, false);
-			if (textBytes.length > 0) {
-				BufferTools.copyIntoByteBuffer(textBytes, 0, textBytes.length, bytes, 1);
-			}
-		}
-		return bytes;
-	}
-
-	@Override
-	protected int getLength() {
-		int length = 1;
-		if (text != null) length += text.toBytes(true, false).length;
-		return length;
-	}
-
 	public EncodedText getText() {
 		return text;
 	}
@@ -74,5 +49,30 @@ public class ID3v2TextFrameData extends AbstractID3v2FrameData {
 		} else if (!text.equals(other.text))
 			return false;
 		return true;
+	}
+
+	@Override
+	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
+		text = new EncodedText(bytes[0], BufferTools.copyBuffer(bytes, 1, bytes.length - 1));
+	}
+
+	@Override
+	protected byte[] packFrameData() {
+		byte[] bytes = new byte[getLength()];
+		if (text != null) {
+			bytes[0] = text.getTextEncoding();
+			byte[] textBytes = text.toBytes(true, false);
+			if (textBytes.length > 0) {
+				BufferTools.copyIntoByteBuffer(textBytes, 0, textBytes.length, bytes, 1);
+			}
+		}
+		return bytes;
+	}
+
+	@Override
+	protected int getLength() {
+		int length = 1;
+		if (text != null) length += text.toBytes(true, false).length;
+		return length;
 	}
 }

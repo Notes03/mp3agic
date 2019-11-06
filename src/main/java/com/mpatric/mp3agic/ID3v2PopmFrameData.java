@@ -8,19 +8,18 @@ import java.util.Map;
 public class ID3v2PopmFrameData extends AbstractID3v2FrameData {
 
 	protected static final String WMP9_ADDRESS = "Windows Media Player 9 Series";
-
-	protected String address = "";
-	protected int rating = -1;
-
 	private static final Map<Byte, Integer> byteToRating = new HashMap<>(5);
 	private static final byte[] wmp9encodedRatings = {(byte) 0x00, (byte) 0x01, (byte) 0x40, (byte) 0x80, (byte) 0xC4,
-			(byte) 0xFF};
+		(byte) 0xFF};
 
 	static {
 		for (int i = 0; i < 6; i++) {
 			byteToRating.put(wmp9encodedRatings[i], i);
 		}
 	}
+
+	protected String address = "";
+	protected int rating = -1;
 
 	public ID3v2PopmFrameData(boolean unsynchronisation, byte[] bytes) throws InvalidDataException {
 		super(unsynchronisation);
@@ -31,27 +30,6 @@ public class ID3v2PopmFrameData extends AbstractID3v2FrameData {
 		super(unsynchronisation);
 		this.address = WMP9_ADDRESS;
 		this.rating = rating;
-	}
-
-	@Override
-	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
-		try {
-			address = BufferTools.byteBufferToString(bytes, 0, bytes.length - 2);
-		} catch (UnsupportedEncodingException e) {
-			address = "";
-		}
-		final byte ratingByte = bytes[bytes.length - 1];
-		rating = byteToRating.getOrDefault(ratingByte, -1);
-
-	}
-
-	@Override
-	protected byte[] packFrameData() {
-		byte[] bytes = address.getBytes();
-		bytes = Arrays.copyOf(bytes, address.length() + 2);
-		bytes[bytes.length - 2] = 0;
-		bytes[bytes.length - 1] = wmp9encodedRatings[rating];
-		return bytes;
 	}
 
 	public String getAddress() {
@@ -68,11 +46,6 @@ public class ID3v2PopmFrameData extends AbstractID3v2FrameData {
 
 	public void setRating(int rating) {
 		this.rating = rating;
-	}
-
-	@Override
-	protected int getLength() {
-		return address.length() + 2;
 	}
 
 	@Override
@@ -101,6 +74,32 @@ public class ID3v2PopmFrameData extends AbstractID3v2FrameData {
 		if (rating != other.rating)
 			return false;
 		return true;
+	}
+
+	@Override
+	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
+		try {
+			address = BufferTools.byteBufferToString(bytes, 0, bytes.length - 2);
+		} catch (UnsupportedEncodingException e) {
+			address = "";
+		}
+		final byte ratingByte = bytes[bytes.length - 1];
+		rating = byteToRating.getOrDefault(ratingByte, -1);
+
+	}
+
+	@Override
+	protected byte[] packFrameData() {
+		byte[] bytes = address.getBytes();
+		bytes = Arrays.copyOf(bytes, address.length() + 2);
+		bytes[bytes.length - 2] = 0;
+		bytes[bytes.length - 1] = wmp9encodedRatings[rating];
+		return bytes;
+	}
+
+	@Override
+	protected int getLength() {
+		return address.length() + 2;
 	}
 
 

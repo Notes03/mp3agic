@@ -27,54 +27,13 @@ public class ID3v2ChapterFrameData extends AbstractID3v2FrameData {
 	}
 
 	public ID3v2ChapterFrameData(boolean unsynchronisation, byte[] bytes)
-			throws InvalidDataException {
+		throws InvalidDataException {
 		super(unsynchronisation);
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
-	@Override
-	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
-		ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		id = ByteBufferUtils.extractNullTerminatedString(bb);
-
-		bb.position(id.length() + 1);
-		startTime = bb.getInt();
-		endTime = bb.getInt();
-		startOffset = bb.getInt();
-		endOffset = bb.getInt();
-
-		for (int offset = bb.position(); offset < bytes.length; ) {
-			ID3v2Frame frame = new ID3v2Frame(bytes, offset);
-			offset += frame.getLength();
-			subframes.add(frame);
-		}
-
-	}
-
 	public void addSubframe(String id, AbstractID3v2FrameData frame) {
 		subframes.add(new ID3v2Frame(id, frame.toBytes()));
-	}
-
-	@Override
-	protected byte[] packFrameData() {
-		ByteBuffer bb = ByteBuffer.allocate(getLength());
-		bb.put(id.getBytes());
-		bb.put((byte) 0);
-
-		bb.putInt(startTime);
-		bb.putInt(endTime);
-		bb.putInt(startOffset);
-		bb.putInt(endOffset);
-
-		for (ID3v2Frame frame : subframes) {
-			try {
-				bb.put(frame.toBytes());
-			} catch (NotSupportedException e) {
-				e.printStackTrace();
-			}
-		}
-		return bb.array();
 	}
 
 	public String getId() {
@@ -126,20 +85,6 @@ public class ID3v2ChapterFrameData extends AbstractID3v2FrameData {
 	}
 
 	@Override
-	protected int getLength() {
-		int length = 1;
-		length += 16;
-		if (id != null)
-			length += id.length();
-		if (subframes != null) {
-			for (ID3v2Frame frame : subframes) {
-				length += frame.getLength();
-			}
-		}
-		return length;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ID3v2ChapterFrameData [id=");
@@ -168,7 +113,7 @@ public class ID3v2ChapterFrameData extends AbstractID3v2FrameData {
 		result = prime * result + startOffset;
 		result = prime * result + startTime;
 		result = prime * result
-				+ ((subframes == null) ? 0 : subframes.hashCode());
+			+ ((subframes == null) ? 0 : subframes.hashCode());
 		return result;
 	}
 
@@ -200,5 +145,60 @@ public class ID3v2ChapterFrameData extends AbstractID3v2FrameData {
 		} else if (!subframes.equals(other.subframes))
 			return false;
 		return true;
+	}
+
+	@Override
+	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+
+		id = ByteBufferUtils.extractNullTerminatedString(bb);
+
+		bb.position(id.length() + 1);
+		startTime = bb.getInt();
+		endTime = bb.getInt();
+		startOffset = bb.getInt();
+		endOffset = bb.getInt();
+
+		for (int offset = bb.position(); offset < bytes.length; ) {
+			ID3v2Frame frame = new ID3v2Frame(bytes, offset);
+			offset += frame.getLength();
+			subframes.add(frame);
+		}
+
+	}
+
+	@Override
+	protected byte[] packFrameData() {
+		ByteBuffer bb = ByteBuffer.allocate(getLength());
+		bb.put(id.getBytes());
+		bb.put((byte) 0);
+
+		bb.putInt(startTime);
+		bb.putInt(endTime);
+		bb.putInt(startOffset);
+		bb.putInt(endOffset);
+
+		for (ID3v2Frame frame : subframes) {
+			try {
+				bb.put(frame.toBytes());
+			} catch (NotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return bb.array();
+	}
+
+	@Override
+	protected int getLength() {
+		int length = 1;
+		length += 16;
+		if (id != null)
+			length += id.length();
+		if (subframes != null) {
+			for (ID3v2Frame frame : subframes) {
+				length += frame.getLength();
+			}
+		}
+		return length;
 	}
 }

@@ -69,48 +69,63 @@ public class MpegFrame {
 	protected MpegFrame() {
 	}
 
-	private void setFields(long frameHeader) throws InvalidDataException {
-		long frameSync = extractField(frameHeader, BITMASK_FRAME_SYNC);
-		if (frameSync != FRAME_SYNC) throw new InvalidDataException("Frame sync missing");
-		setVersion(extractField(frameHeader, BITMASK_VERSION));
-		setLayer(extractField(frameHeader, BITMASK_LAYER));
-		setProtection(extractField(frameHeader, BITMASK_PROTECTION));
-		setBitRate(extractField(frameHeader, BITMASK_BITRATE));
-		setSampleRate(extractField(frameHeader, BITMASK_SAMPLE_RATE));
-		setPadding(extractField(frameHeader, BITMASK_PADDING));
-		setPrivate(extractField(frameHeader, BITMASK_PRIVATE));
-		setChannelMode(extractField(frameHeader, BITMASK_CHANNEL_MODE));
-		setModeExtension(extractField(frameHeader, BITMASK_MODE_EXTENSION));
-		setCopyright(extractField(frameHeader, BITMASK_COPYRIGHT));
-		setOriginal(extractField(frameHeader, BITMASK_ORIGINAL));
-		setEmphasis(extractField(frameHeader, BITMASK_EMPHASIS));
+	public int getBitrate() {
+		return bitrate;
 	}
 
-	protected int extractField(long frameHeader, long bitMask) {
-		int shiftBy = 0;
-		for (int i = 0; i <= 31; i++) {
-			if (((bitMask >> i) & 1) != 0) {
-				shiftBy = i;
-				break;
-			}
-		}
-		return (int) ((frameHeader >> shiftBy) & (bitMask >> shiftBy));
+	public String getChannelMode() {
+		return channelMode;
 	}
 
-	private void setVersion(int version) throws InvalidDataException {
-		switch (version) {
+	private void setChannelMode(int channelMode) throws InvalidDataException {
+		switch (channelMode) {
 			case 0:
-				this.version = MPEG_VERSION_2_5;
+				this.channelMode = CHANNEL_MODE_STEREO;
+				break;
+			case 1:
+				this.channelMode = CHANNEL_MODE_JOINT_STEREO;
 				break;
 			case 2:
-				this.version = MPEG_VERSION_2_0;
+				this.channelMode = CHANNEL_MODE_DUAL_MONO;
 				break;
 			case 3:
-				this.version = MPEG_VERSION_1_0;
+				this.channelMode = CHANNEL_MODE_MONO;
 				break;
 			default:
-				throw new InvalidDataException("Invalid mpeg audio version in frame header");
+				throw new InvalidDataException("Invalid channel mode in frame header");
 		}
+	}
+
+	public boolean isCopyright() {
+		return copyright;
+	}
+
+	private void setCopyright(int copyrightBit) {
+		this.copyright = (copyrightBit == 1);
+	}
+
+	public String getEmphasis() {
+		return emphasis;
+	}
+
+	private void setEmphasis(int emphasis) throws InvalidDataException {
+		switch (emphasis) {
+			case 0:
+				this.emphasis = EMPHASIS_NONE;
+				break;
+			case 1:
+				this.emphasis = EMPHASIS__50_15_MS;
+				break;
+			case 3:
+				this.emphasis = EMPHASIS_CCITT_J_17;
+				break;
+			default:
+				throw new InvalidDataException("Invalid emphasis in frame header");
+		}
+	}
+
+	public String getLayer() {
+		return MPEG_LAYERS[layer];
 	}
 
 	private void setLayer(int layer) throws InvalidDataException {
@@ -129,8 +144,181 @@ public class MpegFrame {
 		}
 	}
 
+	public String getModeExtension() {
+		return modeExtension;
+	}
+
+	private void setModeExtension(int modeExtension) throws InvalidDataException {
+		if (!CHANNEL_MODE_JOINT_STEREO.equals(channelMode)) {
+			this.modeExtension = MODE_EXTENSION_NA;
+		} else {
+			if (layer == 1 || layer == 2) {
+				switch (modeExtension) {
+					case 0:
+						this.modeExtension = MODE_EXTENSION_BANDS_4_31;
+						return;
+					case 1:
+						this.modeExtension = MODE_EXTENSION_BANDS_8_31;
+						return;
+					case 2:
+						this.modeExtension = MODE_EXTENSION_BANDS_12_31;
+						return;
+					case 3:
+						this.modeExtension = MODE_EXTENSION_BANDS_16_31;
+						return;
+				}
+			} else if (layer == 3) {
+				switch (modeExtension) {
+					case 0:
+						this.modeExtension = MODE_EXTENSION_NONE;
+						return;
+					case 1:
+						this.modeExtension = MODE_EXTENSION_INTENSITY_STEREO;
+						return;
+					case 2:
+						this.modeExtension = MODE_EXTENSION_M_S_STEREO;
+						return;
+					case 3:
+						this.modeExtension = MODE_EXTENSION_INTENSITY_M_S_STEREO;
+						return;
+				}
+			}
+			throw new InvalidDataException("Invalid mode extension in frame header");
+		}
+	}
+
+	public boolean isOriginal() {
+		return original;
+	}
+
+	private void setOriginal(int originalBit) {
+		this.original = (originalBit == 1);
+	}
+
+	public boolean hasPadding() {
+		return padding;
+	}
+
+	public boolean isPrivate() {
+		return privat;
+	}
+
+	private void setPrivate(int privateBit) {
+		this.privat = (privateBit == 1);
+	}
+
+	public boolean isProtection() {
+		return protection;
+	}
+
 	private void setProtection(int protectionBit) {
 		this.protection = (protectionBit == 1);
+	}
+
+	public int getSampleRate() {
+		return sampleRate;
+	}
+
+	private void setSampleRate(int sampleRate) throws InvalidDataException {
+		if (MPEG_VERSION_1_0.equals(version)) {
+			switch (sampleRate) {
+				case 0:
+					this.sampleRate = 44100;
+					return;
+				case 1:
+					this.sampleRate = 48000;
+					return;
+				case 2:
+					this.sampleRate = 32000;
+					return;
+			}
+		} else if (MPEG_VERSION_2_0.equals(version)) {
+			switch (sampleRate) {
+				case 0:
+					this.sampleRate = 22050;
+					return;
+				case 1:
+					this.sampleRate = 24000;
+					return;
+				case 2:
+					this.sampleRate = 16000;
+					return;
+			}
+		} else if (MPEG_VERSION_2_5.equals(version)) {
+			switch (sampleRate) {
+				case 0:
+					this.sampleRate = 11025;
+					return;
+				case 1:
+					this.sampleRate = 12000;
+					return;
+				case 2:
+					this.sampleRate = 8000;
+					return;
+			}
+		}
+		throw new InvalidDataException("Invalid sample rate in frame header");
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	private void setVersion(int version) throws InvalidDataException {
+		switch (version) {
+			case 0:
+				this.version = MPEG_VERSION_2_5;
+				break;
+			case 2:
+				this.version = MPEG_VERSION_2_0;
+				break;
+			case 3:
+				this.version = MPEG_VERSION_1_0;
+				break;
+			default:
+				throw new InvalidDataException("Invalid mpeg audio version in frame header");
+		}
+	}
+
+	public int getLengthInBytes() {
+		long length;
+		int pad;
+		if (padding) pad = 1;
+		else pad = 0;
+		if (layer == 1) {
+			length = ((48000 * bitrate) / sampleRate) + (pad * 4);
+		} else {
+			length = ((144000 * bitrate) / sampleRate) + pad;
+		}
+		return (int) length;
+	}
+
+	protected int extractField(long frameHeader, long bitMask) {
+		int shiftBy = 0;
+		for (int i = 0; i <= 31; i++) {
+			if (((bitMask >> i) & 1) != 0) {
+				shiftBy = i;
+				break;
+			}
+		}
+		return (int) ((frameHeader >> shiftBy) & (bitMask >> shiftBy));
+	}
+
+	private void setFields(long frameHeader) throws InvalidDataException {
+		long frameSync = extractField(frameHeader, BITMASK_FRAME_SYNC);
+		if (frameSync != FRAME_SYNC) throw new InvalidDataException("Frame sync missing");
+		setVersion(extractField(frameHeader, BITMASK_VERSION));
+		setLayer(extractField(frameHeader, BITMASK_LAYER));
+		setProtection(extractField(frameHeader, BITMASK_PROTECTION));
+		setBitRate(extractField(frameHeader, BITMASK_BITRATE));
+		setSampleRate(extractField(frameHeader, BITMASK_SAMPLE_RATE));
+		setPadding(extractField(frameHeader, BITMASK_PADDING));
+		setPrivate(extractField(frameHeader, BITMASK_PRIVATE));
+		setChannelMode(extractField(frameHeader, BITMASK_CHANNEL_MODE));
+		setModeExtension(extractField(frameHeader, BITMASK_MODE_EXTENSION));
+		setCopyright(extractField(frameHeader, BITMASK_COPYRIGHT));
+		setOriginal(extractField(frameHeader, BITMASK_ORIGINAL));
+		setEmphasis(extractField(frameHeader, BITMASK_EMPHASIS));
 	}
 
 	private void setBitRate(int bitrate) throws InvalidDataException {
@@ -367,195 +555,7 @@ public class MpegFrame {
 		throw new InvalidDataException("Invalid bitrate in frame header");
 	}
 
-	private void setSampleRate(int sampleRate) throws InvalidDataException {
-		if (MPEG_VERSION_1_0.equals(version)) {
-			switch (sampleRate) {
-				case 0:
-					this.sampleRate = 44100;
-					return;
-				case 1:
-					this.sampleRate = 48000;
-					return;
-				case 2:
-					this.sampleRate = 32000;
-					return;
-			}
-		} else if (MPEG_VERSION_2_0.equals(version)) {
-			switch (sampleRate) {
-				case 0:
-					this.sampleRate = 22050;
-					return;
-				case 1:
-					this.sampleRate = 24000;
-					return;
-				case 2:
-					this.sampleRate = 16000;
-					return;
-			}
-		} else if (MPEG_VERSION_2_5.equals(version)) {
-			switch (sampleRate) {
-				case 0:
-					this.sampleRate = 11025;
-					return;
-				case 1:
-					this.sampleRate = 12000;
-					return;
-				case 2:
-					this.sampleRate = 8000;
-					return;
-			}
-		}
-		throw new InvalidDataException("Invalid sample rate in frame header");
-	}
-
 	private void setPadding(int paddingBit) {
 		this.padding = (paddingBit == 1);
-	}
-
-	private void setPrivate(int privateBit) {
-		this.privat = (privateBit == 1);
-	}
-
-	private void setChannelMode(int channelMode) throws InvalidDataException {
-		switch (channelMode) {
-			case 0:
-				this.channelMode = CHANNEL_MODE_STEREO;
-				break;
-			case 1:
-				this.channelMode = CHANNEL_MODE_JOINT_STEREO;
-				break;
-			case 2:
-				this.channelMode = CHANNEL_MODE_DUAL_MONO;
-				break;
-			case 3:
-				this.channelMode = CHANNEL_MODE_MONO;
-				break;
-			default:
-				throw new InvalidDataException("Invalid channel mode in frame header");
-		}
-	}
-
-	private void setModeExtension(int modeExtension) throws InvalidDataException {
-		if (!CHANNEL_MODE_JOINT_STEREO.equals(channelMode)) {
-			this.modeExtension = MODE_EXTENSION_NA;
-		} else {
-			if (layer == 1 || layer == 2) {
-				switch (modeExtension) {
-					case 0:
-						this.modeExtension = MODE_EXTENSION_BANDS_4_31;
-						return;
-					case 1:
-						this.modeExtension = MODE_EXTENSION_BANDS_8_31;
-						return;
-					case 2:
-						this.modeExtension = MODE_EXTENSION_BANDS_12_31;
-						return;
-					case 3:
-						this.modeExtension = MODE_EXTENSION_BANDS_16_31;
-						return;
-				}
-			} else if (layer == 3) {
-				switch (modeExtension) {
-					case 0:
-						this.modeExtension = MODE_EXTENSION_NONE;
-						return;
-					case 1:
-						this.modeExtension = MODE_EXTENSION_INTENSITY_STEREO;
-						return;
-					case 2:
-						this.modeExtension = MODE_EXTENSION_M_S_STEREO;
-						return;
-					case 3:
-						this.modeExtension = MODE_EXTENSION_INTENSITY_M_S_STEREO;
-						return;
-				}
-			}
-			throw new InvalidDataException("Invalid mode extension in frame header");
-		}
-	}
-
-	private void setCopyright(int copyrightBit) {
-		this.copyright = (copyrightBit == 1);
-	}
-
-	private void setOriginal(int originalBit) {
-		this.original = (originalBit == 1);
-	}
-
-	private void setEmphasis(int emphasis) throws InvalidDataException {
-		switch (emphasis) {
-			case 0:
-				this.emphasis = EMPHASIS_NONE;
-				break;
-			case 1:
-				this.emphasis = EMPHASIS__50_15_MS;
-				break;
-			case 3:
-				this.emphasis = EMPHASIS_CCITT_J_17;
-				break;
-			default:
-				throw new InvalidDataException("Invalid emphasis in frame header");
-		}
-	}
-
-	public int getBitrate() {
-		return bitrate;
-	}
-
-	public String getChannelMode() {
-		return channelMode;
-	}
-
-	public boolean isCopyright() {
-		return copyright;
-	}
-
-	public String getEmphasis() {
-		return emphasis;
-	}
-
-	public String getLayer() {
-		return MPEG_LAYERS[layer];
-	}
-
-	public String getModeExtension() {
-		return modeExtension;
-	}
-
-	public boolean isOriginal() {
-		return original;
-	}
-
-	public boolean hasPadding() {
-		return padding;
-	}
-
-	public boolean isPrivate() {
-		return privat;
-	}
-
-	public boolean isProtection() {
-		return protection;
-	}
-
-	public int getSampleRate() {
-		return sampleRate;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public int getLengthInBytes() {
-		long length;
-		int pad;
-		if (padding) pad = 1;
-		else pad = 0;
-		if (layer == 1) {
-			length = ((48000 * bitrate) / sampleRate) + (pad * 4);
-		} else {
-			length = ((144000 * bitrate) / sampleRate) + pad;
-		}
-		return (int) length;
 	}
 }

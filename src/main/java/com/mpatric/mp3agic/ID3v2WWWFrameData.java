@@ -20,6 +20,14 @@ public class ID3v2WWWFrameData extends AbstractID3v2FrameData {
 		synchroniseAndUnpackFrameData(bytes);
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	@Override
 	protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
 		try {
@@ -46,14 +54,6 @@ public class ID3v2WWWFrameData extends AbstractID3v2FrameData {
 		int length = 0;
 		if (url != null) length = url.length();
 		return length;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 }
