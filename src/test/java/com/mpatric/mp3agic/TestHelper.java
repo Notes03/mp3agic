@@ -1,10 +1,12 @@
 package com.mpatric.mp3agic;
 
-import java.io.File;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
-import org.junit.Test;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -31,16 +33,16 @@ public class TestHelper {
 	}
 
 	public static byte[] loadFile(String filename) throws IOException {
-		RandomAccessFile file = new RandomAccessFile(filename, "r");
-		byte[] buffer = new byte[(int) file.length()];
-		file.read(buffer);
-		file.close();
-		return buffer;
+		try (RandomAccessFile file = new RandomAccessFile(filename, "r")) {
+			byte[] buffer = new byte[(int) file.length()];
+			file.read(buffer);
+			return buffer;
+		}
 	}
 
-	public static void deleteFile(String filename) {
-		File file = new File(filename);
-		file.delete();
+	public static void deleteFile(String filename) throws IOException {
+		Path file = Paths.get(filename);
+		Files.delete(file);
 	}
 
 	public static void replaceSpacesWithNulls(byte[] buffer) {
@@ -61,8 +63,8 @@ public class TestHelper {
 
 	// self tests
 	@Test
-	public void shouldConvertBytesToHexAndBack() throws Exception {
-		byte bytes[] = {(byte) 0x48, (byte) 0x45, (byte) 0x4C, (byte) 0x4C, (byte) 0x4F, (byte) 0x20, (byte) 0x74, (byte) 0x68, (byte) 0x65, (byte) 0x72, (byte) 0x65, (byte) 0x21};
+	public void shouldConvertBytesToHexAndBack() {
+		byte[] bytes = {(byte) 0x48, (byte) 0x45, (byte) 0x4C, (byte) 0x4C, (byte) 0x4F, (byte) 0x20, (byte) 0x74, (byte) 0x68, (byte) 0x65, (byte) 0x72, (byte) 0x65, (byte) 0x21};
 		String hexString = TestHelper.bytesToHexString(bytes);
 		assertEquals("48 45 4c 4c 4f 20 74 68 65 72 65 21", hexString);
 		assertArrayEquals(bytes, TestHelper.hexStringToBytes(hexString));

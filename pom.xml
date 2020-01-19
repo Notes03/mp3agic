@@ -11,7 +11,7 @@
 
 	<groupId>com.mpatric</groupId>
 	<artifactId>mp3agic_mp3tagsfortracks</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<version>0.9.4-SNAPSHOT</version>
 	<name>mp3agic</name>
 	<description>A java library for reading mp3 files and manipulating mp3 file ID3 tags (ID3v1 and ID3v2.2 to
 		ID3v2.4).
@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>nl.jqno.equalsverifier</groupId>
 			<artifactId>equalsverifier</artifactId>
-			<version>2.3.2</version>
+			<version>3.1.10</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -77,7 +77,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.2.0</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -90,7 +90,7 @@
 			<!-- attach "bundling javadoc jar" to the package phase -->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
+				<version>3.1.1</version>
 				<executions>
 					<execution>
 						<id>attach-javadoc</id>
@@ -110,7 +110,7 @@
 			<!-- attach "bundling source jar" to the package phase -->
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
