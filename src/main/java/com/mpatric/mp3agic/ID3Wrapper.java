@@ -1,5 +1,7 @@
 package com.mpatric.mp3agic;
 
+import java.util.Objects;
+
 public class ID3Wrapper {
 
 	private final ID3v1 id3v1Tag;
@@ -315,8 +317,8 @@ public class ID3Wrapper {
 
 		ID3Wrapper that = (ID3Wrapper) o;
 
-		if (id3v1Tag != null ? !id3v1Tag.equals(that.id3v1Tag) : that.id3v1Tag != null) return false;
-		return id3v2Tag != null ? id3v2Tag.equals(that.id3v2Tag) : that.id3v2Tag == null;
+		if (!Objects.equals(id3v1Tag, that.id3v1Tag)) return false;
+		return Objects.equals(id3v2Tag, that.id3v2Tag);
 	}
 
 	@Override

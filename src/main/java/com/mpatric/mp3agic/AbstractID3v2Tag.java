@@ -390,7 +390,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 		if (genre >= 0) {
 			invalidateDataLength();
 			String genreDescription = genre < ID3v1Genres.GENRES.length ? ID3v1Genres.GENRES[genre] : "";
-			String combinedGenre = "(" + Integer.toString(genre) + ")" + genreDescription;
+			String combinedGenre = "(" + genre + ")" + genreDescription;
 			ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(combinedGenre));
 			addFrame(createFrame(ID_GENRE, frameData.toBytes()), true);
 		} else {
@@ -890,10 +890,9 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 		} else if (other.version == null) return false;
 		else if (!version.equals(other.version)) return false;
 		if (frameSets == null) {
-			if (other.frameSets != null) return false;
+			return other.frameSets == null;
 		} else if (other.frameSets == null) return false;
-		else if (!frameSets.equals(other.frameSets)) return false;
-		return true;
+		else return frameSets.equals(other.frameSets);
 	}
 
 	protected abstract void unpackFlags(byte[] bytes);
@@ -1053,20 +1052,9 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 	private int packHeader(byte[] bytes, int offset) {
 		try {
 			BufferTools.stringIntoByteBuffer(TAG, 0, TAG.length(), bytes, offset);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException ignored) {
 		}
-		String s[] = version.split("\\.");
-		if (s.length > 0) {
-			byte majorVersion = Byte.parseByte(s[0]);
-			bytes[offset + MAJOR_VERSION_OFFSET] = majorVersion;
-		}
-		if (s.length > 1) {
-			byte minorVersion = Byte.parseByte(s[1]);
-			bytes[offset + MINOR_VERSION_OFFSET] = minorVersion;
-		}
-		packFlags(bytes, offset);
-		BufferTools.packSynchsafeInteger(getDataLength(), bytes, offset + DATA_LENGTH_OFFSET);
-		return offset + HEADER_LENGTH;
+		return splitVersion(bytes, offset, HEADER_LENGTH);
 	}
 
 	private int packExtendedHeader(byte[] bytes, int offset) {
@@ -1093,9 +1081,13 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 	private int packFooter(byte[] bytes, int offset) {
 		try {
 			BufferTools.stringIntoByteBuffer(FOOTER_TAG, 0, FOOTER_TAG.length(), bytes, offset);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException ignored) {
 		}
-		String s[] = version.split("\\.");
+		return splitVersion(bytes, offset, FOOTER_LENGTH);
+	}
+
+	private int splitVersion(byte[] bytes, int offset, int footerLength) {
+		String[] s = version.split("\\.");
 		if (s.length > 0) {
 			byte majorVersion = Byte.parseByte(s[0]);
 			bytes[offset + MAJOR_VERSION_OFFSET] = majorVersion;
@@ -1106,7 +1098,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 		}
 		packFlags(bytes, offset);
 		BufferTools.packSynchsafeInteger(getDataLength(), bytes, offset + DATA_LENGTH_OFFSET);
-		return offset + FOOTER_LENGTH;
+		return offset + footerLength;
 	}
 
 	private int calculateDataLength() {
@@ -1132,6 +1124,25 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 			}
 		}
 		return -1;
+	}
+
+	@Override
+	public String getUserDefined(String id) {
+		ID3v2TextFrameData textFrameData = extractTextFrameData(id);
+		if (textFrameData != null) {
+			return textFrameData.getText().toString();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void setUserDefined(String id, String value) {
+		if (id != null && value != null) {
+			invalidateDataLength();
+			ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(value));
+			addFrame(createFrame(id, frameData.toBytes()), true);
+		}
 	}
 
 	private ArrayList<ID3v2ChapterFrameData> extractChapterFrameData(String id) {

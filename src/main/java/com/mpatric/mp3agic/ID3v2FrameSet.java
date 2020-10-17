@@ -58,10 +58,7 @@ public class ID3v2FrameSet {
 		} else if (!frames.equals(other.frames))
 			return false;
 		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+			return other.id == null;
+		} else return id.equals(other.id);
 	}
 }

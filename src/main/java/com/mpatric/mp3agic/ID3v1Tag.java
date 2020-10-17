@@ -55,7 +55,7 @@ public class ID3v1Tag implements ID3v1 {
 		Arrays.fill(bytes, (byte) 0);
 		try {
 			BufferTools.stringIntoByteBuffer(TAG, 0, 3, bytes, 0);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException ignored) {
 		}
 		packField(bytes, title, TITLE_LENGTH, TITLE_OFFSET);
 		packField(bytes, artist, ARTIST_LENGTH, ARTIST_OFFSET);
@@ -221,11 +221,8 @@ public class ID3v1Tag implements ID3v1 {
 		} else if (!track.equals(other.track))
 			return false;
 		if (year == null) {
-			if (other.year != null)
-				return false;
-		} else if (!year.equals(other.year))
-			return false;
-		return true;
+			return other.year == null;
+		} else return year.equals(other.year);
 	}
 
 	private void unpackTag(byte[] bytes) throws NoSuchTagException {
@@ -265,7 +262,7 @@ public class ID3v1Tag implements ID3v1 {
 		if (value != null) {
 			try {
 				BufferTools.stringIntoByteBuffer(value, 0, Math.min(value.length(), maxLength), bytes, offset);
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		}
 	}

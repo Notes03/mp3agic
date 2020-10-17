@@ -1440,6 +1440,15 @@ public class ID3WrapperTest {
 		public void clearFrameSet(String id) {
 			frameSets.remove(id);
 		}
+
+		@Override
+		public String getUserDefined(String id) {
+			return "";
+		}
+
+		@Override
+		public void setUserDefined(String id, String value){
+		}
 	}
 	//endregion
 }

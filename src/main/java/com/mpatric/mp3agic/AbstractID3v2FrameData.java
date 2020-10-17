@@ -25,9 +25,7 @@ public abstract class AbstractID3v2FrameData {
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractID3v2FrameData other = (AbstractID3v2FrameData) obj;
-		if (unsynchronisation != other.unsynchronisation)
-			return false;
-		return true;
+		return unsynchronisation == other.unsynchronisation;
 	}
 
 	protected final void synchroniseAndUnpackFrameData(byte[] bytes) throws InvalidDataException {

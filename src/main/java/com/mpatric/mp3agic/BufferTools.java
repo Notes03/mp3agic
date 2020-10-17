@@ -223,7 +223,7 @@ public class BufferTools {
 		int position = 0;
 		while ((position = s.indexOf(replaceThis, position)) >= 0) {
 			if (position > lastPosition) {
-				newString.append(s.substring(lastPosition, position));
+				newString.append(s, lastPosition, position);
 			}
 			if (withThis != null) {
 				newString.append(withThis);

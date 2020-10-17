@@ -410,7 +410,7 @@ public class Mp3File extends FileWrapper {
 	}
 
 	private void addBitrate(int bitrate) {
-		Integer key = Integer.valueOf(bitrate);
+		Integer key = bitrate;
 		MutableInteger count = bitrates.get(key);
 		if (count != null) {
 			count.increment();
@@ -473,9 +473,8 @@ public class Mp3File extends FileWrapper {
 		if (filePos < 0) filePos = startOffset;
 		if (filePos < 0) return;
 		if (endOffset < filePos) return;
-		SeekableByteChannel seekableByteChannel = Files.newByteChannel(path, StandardOpenOption.READ);
-		ByteBuffer byteBuffer = ByteBuffer.allocate(bufferLength);
-		try {
+		try (SeekableByteChannel seekableByteChannel = Files.newByteChannel(path, StandardOpenOption.READ)) {
+			ByteBuffer byteBuffer = ByteBuffer.allocate(bufferLength);
 			seekableByteChannel.position(filePos);
 			while (true) {
 				byteBuffer.clear();
@@ -491,8 +490,6 @@ public class Mp3File extends FileWrapper {
 					break;
 				}
 			}
-		} finally {
-			seekableByteChannel.close();
 		}
 	}
 }

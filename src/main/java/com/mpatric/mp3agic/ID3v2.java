@@ -152,4 +152,8 @@ public interface ID3v2 extends ID3v1 {
 	Map<String, ID3v2FrameSet> getFrameSets();
 
 	void clearFrameSet(String id);
+
+	String getUserDefined(String id);
+
+	void setUserDefined(String id, String value);
 }

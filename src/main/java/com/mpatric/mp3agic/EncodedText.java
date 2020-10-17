@@ -156,7 +156,7 @@ public class EncodedText {
 		if (newLength == value.length) {
 			return value;
 		} else {
-			byte bytes[] = new byte[newLength];
+			byte[] bytes = new byte[newLength];
 			int i = 0;
 			if (includeBom) {
 				byte[] bom = boms[textEncoding];
@@ -212,9 +212,7 @@ public class EncodedText {
 		EncodedText other = (EncodedText) obj;
 		if (textEncoding != other.textEncoding)
 			return false;
-		if (!Arrays.equals(value, other.value))
-			return false;
-		return true;
+		return Arrays.equals(value, other.value);
 	}
 
 	protected static CharBuffer bytesToCharBuffer(byte[] bytes, String characterSet) throws CharacterCodingException {

@@ -206,8 +206,7 @@ public class Mp3FileTest {
 
 	@Test
 	public void shouldRemoveId3v1Tag() throws Exception {
-		String filename = MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS;
-		testShouldRemoveId3v1Tag(new Mp3File(filename));
+		testShouldRemoveId3v1Tag(new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
 	}
 
 	@Test
@@ -232,8 +231,7 @@ public class Mp3FileTest {
 
 	@Test
 	public void shouldRemoveId3v2Tag() throws Exception {
-		String filename = MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS;
-		testShouldRemoveId3v2Tag(new Mp3File(filename));
+		testShouldRemoveId3v2Tag(new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
 	}
 
 	@Test
@@ -258,8 +256,7 @@ public class Mp3FileTest {
 
 	@Test
 	public void shouldRemoveCustomTag() throws Exception {
-		String filename = MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS;
-		testShouldRemoveCustomTag(new Mp3File(filename));
+		testShouldRemoveCustomTag(new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
 	}
 
 	@Test
@@ -284,8 +281,7 @@ public class Mp3FileTest {
 
 	@Test
 	public void shouldRemoveId3v1AndId3v2AndCustomTags() throws Exception {
-		String filename = MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS;
-		testShouldRemoveId3v1AndId3v2AndCustomTags(new Mp3File(filename));
+		testShouldRemoveId3v1AndId3v2AndCustomTags(new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
 	}
 
 	@Test
