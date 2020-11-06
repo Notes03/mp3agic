@@ -24,7 +24,7 @@ public class FileWrapper {
 
 	public FileWrapper(File file) throws IOException {
 		if (file == null) throw new NullPointerException();
-		this.path = Paths.get(file.getPath());
+		this.path = file.toPath();
 		init();
 	}
 
@@ -37,6 +37,8 @@ public class FileWrapper {
 	public String getFilename() {
 		return path.toString();
 	}
+
+	public Path getPath() { return path;}
 
 	public long getLength() {
 		return length;
