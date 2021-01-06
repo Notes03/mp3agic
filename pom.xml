@@ -11,7 +11,7 @@
 
 	<groupId>com.mpatric</groupId>
 	<artifactId>mp3agic_mp3tagsfortracks</artifactId>
-	<version>0.9.6-SNAPSHOT</version>
+	<version>0.9.7-SNAPSHOT</version>
 	<name>mp3agic</name>
 	<description>A java library for reading mp3 files and manipulating mp3 file ID3 tags (ID3v1 and ID3v2.2 to
 		ID3v2.4).
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -70,8 +70,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>8</source>
-					<target>8</target>
+					<source>9</source>
+					<target>9</target>
 					<debug>false</debug>
 				</configuration>
 			</plugin>

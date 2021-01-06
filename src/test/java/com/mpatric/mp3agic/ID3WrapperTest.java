@@ -1449,6 +1449,36 @@ public class ID3WrapperTest {
 		@Override
 		public void setUserDefined(String id, String value){
 		}
+
+	  @Override
+	  public String getConductorRefinement() {
+		return null;
+	  }
+
+	  @Override
+	  public void setConductorRefinement(String conductor) {
+
+	  }
+
+	  @Override
+	  public String getSubtitleRefinement() {
+		return null;
+	  }
+
+	  @Override
+	  public void setSubtitleRefinement(String subtitle) {
+
+	  }
+
+	  @Override
+	  public String getEncLength() {
+		return null;
+	  }
+
+	  @Override
+	  public void setEncLength(String length) {
+
+	  }
 	}
 	//endregion
 }
