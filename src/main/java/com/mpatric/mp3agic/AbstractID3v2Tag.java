@@ -518,9 +518,12 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
   public void setGenreDescription(String text) throws IllegalArgumentException {
 	int genreNum = ID3v1Genres.matchGenreDescription(text);
 	if (genreNum < 0) {
-	  throw new IllegalArgumentException("Unknown genre: " + text);
+//	  throw new IllegalArgumentException("Unknown genre: " + text);
+	  ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(text));
+	  addFrame(createFrame(ID_GENRE, frameData.toBytes()), true);
+	} else {
+	  setGenre(genreNum);
 	}
-	setGenre(genreNum);
   }
 
   @Override
