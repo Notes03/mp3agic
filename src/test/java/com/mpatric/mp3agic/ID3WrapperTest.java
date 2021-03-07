@@ -541,6 +541,13 @@ public class ID3WrapperTest {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		assertNull(wrapper.getGenreDescription());
 	}
+
+	@Test
+	public void setGenreDescription() {
+		ID3Wrapper wrapper = new ID3Wrapper(null, new ID3v2TagForTesting());
+		wrapper.setGenreDescription("Custom Genre");
+		assertEquals("Custom Genre", wrapper.getGenreDescription());
+	}
 	//endregion
 
 	//region getComment

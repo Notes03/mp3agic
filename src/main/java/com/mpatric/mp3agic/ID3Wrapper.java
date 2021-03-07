@@ -144,6 +144,12 @@ public class ID3Wrapper {
 	}
   }
 
+  public void setGenreDescription(String text) {
+	if (id3v2Tag != null) {
+	  id3v2Tag.setGenreDescription(text);
+	}
+  }
+
   public String getComment() {
 	if (id3v2Tag != null && id3v2Tag.getComment() != null && id3v2Tag.getComment().length() > 0) {
 	  return id3v2Tag.getComment();
