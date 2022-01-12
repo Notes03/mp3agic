@@ -42,6 +42,7 @@ public class EncodedText {
 	  {0, 0},
 	  {0}
   };
+  public static final String NULL_CHARACTER = "\u0000";
 
   private byte[] value;
   private byte textEncoding;
@@ -111,6 +112,12 @@ public class EncodedText {
 	int length = s.indexOf(0);
 	if (length == -1) return s;
 	return s.substring(0, length);
+  }
+
+  private static String[] bytesToStrings(byte[] bytes, String characterSet) throws CharacterCodingException {
+	CharBuffer cbuf = bytesToCharBuffer(bytes, characterSet);
+	String s = cbuf.toString();
+	return s.split(NULL_CHARACTER);
   }
 
   private static byte[] stringToBytes(String s, String characterSet) {
@@ -183,6 +190,14 @@ public class EncodedText {
   public String toString() {
 	try {
 	  return bytesToString(value, characterSetForTextEncoding(textEncoding));
+	} catch (CharacterCodingException e) {
+	  return null;
+	}
+  }
+
+  public String[] toStringList() {
+	try {
+	  return bytesToStrings(value, characterSetForTextEncoding(textEncoding));
 	} catch (CharacterCodingException e) {
 	  return null;
 	}

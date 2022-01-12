@@ -1,10 +1,7 @@
 package com.mpatric.mp3agic;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public abstract class AbstractID3v2Tag implements ID3v2 {
 
@@ -339,6 +336,16 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
 	if (frameData != null && frameData.getText() != null) return frameData.getText().toString();
 	return null;
   }
+
+  @Override
+  public List<String> getArtistList() {
+	ID3v2TextFrameData frameData = extractTextFrameData(obseleteFormat ? ID_ARTIST_OBSELETE : ID_ARTIST);
+	if (frameData != null && frameData.getText() != null) {
+	  return Arrays.asList(frameData.getText().toStringList());
+	}
+	return null;
+  }
+
 
   @Override
   public void setArtist(String artist) {

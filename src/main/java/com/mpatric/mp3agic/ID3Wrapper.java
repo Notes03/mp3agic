@@ -1,5 +1,8 @@
 package com.mpatric.mp3agic;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class ID3Wrapper {
@@ -44,6 +47,16 @@ public class ID3Wrapper {
 	  return id3v2Tag.getArtist();
 	} else if (id3v1Tag != null) {
 	  return id3v1Tag.getArtist();
+	} else {
+	  return null;
+	}
+  }
+
+  public List<String> getArtistList() {
+	if (id3v2Tag != null && id3v2Tag.getArtistList() != null && id3v2Tag.getArtistList().size() > 0) {
+	  return id3v2Tag.getArtistList();
+	} else if (id3v1Tag != null) {
+	  return Collections.singletonList(id3v1Tag.getArtist());
 	} else {
 	  return null;
 	}

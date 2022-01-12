@@ -1,6 +1,7 @@
 package com.mpatric.mp3agic;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public interface ID3v2 extends ID3v1 {
@@ -120,6 +121,8 @@ public interface ID3v2 extends ID3v1 {
   void clearAlbumImage();
 
   String getAlbumImageMimeType();
+
+  List<String> getArtistList();
 
   int getWmpRating();
 
