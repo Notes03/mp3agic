@@ -252,7 +252,7 @@ public class ID3v2TagTest {
 		setTagFields(id3tag);
 		try {
 			id3tag.setGenreDescription("Bebop");
-			fail("expected IllegalArgumentException");
+			assertEquals("Bebop",id3tag.getGenreDescription());
 		} catch (IllegalArgumentException e) {
 			// fine
 		}
