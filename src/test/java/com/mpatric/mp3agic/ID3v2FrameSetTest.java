@@ -6,12 +6,12 @@ import org.junit.Test;
 
 public class ID3v2FrameSetTest {
 
-    @Test
-    public void shouldCorrectlyImplementHashCodeAndEquals() {
-        EqualsVerifier.forClass(ID3v2FrameSet.class)
-                .usingGetClass()
-                .suppress(Warning.NONFINAL_FIELDS)
-                .verify();
-    }
+  @Test
+  public void shouldCorrectlyImplementHashCodeAndEquals() {
+    EqualsVerifier.forClass(ID3v2FrameSet.class)
+      .usingGetClass()
+      .suppress(Warning.NONFINAL_FIELDS)
+      .verify();
+  }
 
 }

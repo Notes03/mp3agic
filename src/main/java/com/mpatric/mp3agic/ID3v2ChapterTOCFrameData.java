@@ -13,212 +13,212 @@ public class ID3v2ChapterTOCFrameData extends AbstractID3v2FrameData {
   protected ArrayList<ID3v2Frame> subframes = new ArrayList<>();
 
   public ID3v2ChapterTOCFrameData(boolean unsynchronisation) {
-	super(unsynchronisation);
+    super(unsynchronisation);
   }
 
   public ID3v2ChapterTOCFrameData(boolean unsynchronisation, boolean isRoot, boolean isOrdered,
-								  String id, String[] children) {
-	super(unsynchronisation);
-	this.isRoot = isRoot;
-	this.isOrdered = isOrdered;
-	this.id = id;
-	this.children = children;
+                                  String id, String[] children) {
+    super(unsynchronisation);
+    this.isRoot = isRoot;
+    this.isOrdered = isOrdered;
+    this.id = id;
+    this.children = children;
   }
 
   public ID3v2ChapterTOCFrameData(boolean unsynchronisation, byte[] bytes)
-	  throws InvalidDataException {
-	super(unsynchronisation);
-	synchroniseAndUnpackFrameData(bytes);
+    throws InvalidDataException {
+    super(unsynchronisation);
+    synchroniseAndUnpackFrameData(bytes);
   }
 
   public void addSubframe(String id, AbstractID3v2FrameData frame) {
-	subframes.add(new ID3v2Frame(id, frame.toBytes()));
+    subframes.add(new ID3v2Frame(id, frame.toBytes()));
   }
 
   public boolean isRoot() {
-	return isRoot;
+    return isRoot;
   }
 
   public void setRoot(boolean isRoot) {
-	this.isRoot = isRoot;
+    this.isRoot = isRoot;
   }
 
   public boolean isOrdered() {
-	return isOrdered;
+    return isOrdered;
   }
 
   public void setOrdered(boolean isOrdered) {
-	this.isOrdered = isOrdered;
+    this.isOrdered = isOrdered;
   }
 
   public String getId() {
-	return id;
+    return id;
   }
 
   public void setId(String id) {
-	this.id = id;
+    this.id = id;
   }
 
   public String[] getChildren() {
-	return children;
+    return children;
   }
 
   public void setChildren(String[] children) {
-	this.children = children;
+    this.children = children;
   }
 
   @Deprecated
   public String[] getChilds() {
-	return children;
+    return children;
   }
 
   @Deprecated
   public void setChilds(String[] childs) {
-	this.children = childs;
+    this.children = childs;
   }
 
   public ArrayList<ID3v2Frame> getSubframes() {
-	return subframes;
+    return subframes;
   }
 
   public void setSubframes(ArrayList<ID3v2Frame> subframes) {
-	this.subframes = subframes;
+    this.subframes = subframes;
   }
 
   @Override
   public String toString() {
-	return "ID3v2ChapterTOCFrameData [isRoot=" +
-		isRoot +
-		", isOrdered=" +
-		isOrdered +
-		", id=" +
-		id +
-		", children=" +
-		Arrays.toString(children) +
-		", subframes=" +
-		subframes +
-		"]";
+    return "ID3v2ChapterTOCFrameData [isRoot=" +
+      isRoot +
+      ", isOrdered=" +
+      isOrdered +
+      ", id=" +
+      id +
+      ", children=" +
+      Arrays.toString(children) +
+      ", subframes=" +
+      subframes +
+      "]";
   }
 
   @Override
   public int hashCode() {
-	final int prime = 31;
-	int result = super.hashCode();
-	result = prime * result + Arrays.hashCode(children);
-	result = prime * result + ((id == null) ? 0 : id.hashCode());
-	result = prime * result + (isOrdered ? 1231 : 1237);
-	result = prime * result + (isRoot ? 1231 : 1237);
-	result = prime * result
-		+ ((subframes == null) ? 0 : subframes.hashCode());
-	return result;
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + Arrays.hashCode(children);
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + (isOrdered ? 1231 : 1237);
+    result = prime * result + (isRoot ? 1231 : 1237);
+    result = prime * result
+      + ((subframes == null) ? 0 : subframes.hashCode());
+    return result;
   }
 
   @Override
   public boolean equals(Object obj) {
-	if (this == obj)
-	  return true;
-	if (!super.equals(obj))
-	  return false;
-	if (getClass() != obj.getClass())
-	  return false;
-	ID3v2ChapterTOCFrameData other = (ID3v2ChapterTOCFrameData) obj;
-	if (!Arrays.equals(children, other.children))
-	  return false;
-	if (id == null) {
-	  if (other.id != null)
-		return false;
-	} else if (!id.equals(other.id))
-	  return false;
-	if (isOrdered != other.isOrdered)
-	  return false;
-	if (isRoot != other.isRoot)
-	  return false;
-	if (subframes == null) {
-	  return other.subframes == null;
-	} else return subframes.equals(other.subframes);
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ID3v2ChapterTOCFrameData other = (ID3v2ChapterTOCFrameData) obj;
+    if (!Arrays.equals(children, other.children))
+      return false;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.equals(other.id))
+      return false;
+    if (isOrdered != other.isOrdered)
+      return false;
+    if (isRoot != other.isRoot)
+      return false;
+    if (subframes == null) {
+      return other.subframes == null;
+    } else return subframes.equals(other.subframes);
   }
 
   @Override
   protected void unpackFrameData(byte[] bytes) throws InvalidDataException {
-	ByteBuffer bb = ByteBuffer.wrap(bytes);
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-	id = ByteBufferUtils.extractNullTerminatedString(bb);
+    id = ByteBufferUtils.extractNullTerminatedString(bb);
 
-	byte flags = bb.get();
-	if ((flags & 0x01) == 0x01) {
-	  isRoot = true;
-	}
-	if ((flags & 0x02) == 0x02) {
-	  isOrdered = true;
-	}
+    byte flags = bb.get();
+    if ((flags & 0x01) == 0x01) {
+      isRoot = true;
+    }
+    if ((flags & 0x02) == 0x02) {
+      isOrdered = true;
+    }
 
-	int childCount = bb.get(); // TODO: 0xFF -> int = 255; byte = -128;
+    int childCount = bb.get(); // TODO: 0xFF -> int = 255; byte = -128;
 
-	children = new String[childCount];
+    children = new String[childCount];
 
-	for (int i = 0; i < childCount; i++) {
-	  children[i] = ByteBufferUtils.extractNullTerminatedString(bb);
-	}
+    for (int i = 0; i < childCount; i++) {
+      children[i] = ByteBufferUtils.extractNullTerminatedString(bb);
+    }
 
-	for (int offset = bb.position(); offset < bytes.length; ) {
-	  ID3v2Frame frame = new ID3v2Frame(bytes, offset);
-	  offset += frame.getLength();
-	  subframes.add(frame);
-	}
+    for (int offset = bb.position(); offset < bytes.length; ) {
+      ID3v2Frame frame = new ID3v2Frame(bytes, offset);
+      offset += frame.getLength();
+      subframes.add(frame);
+    }
 
   }
 
   @Override
   protected byte[] packFrameData() {
-	ByteBuffer bb = ByteBuffer.allocate(getLength());
-	bb.put(id.getBytes());
-	bb.put((byte) 0);
-	bb.put(getFlags());
-	bb.put((byte) children.length);
+    ByteBuffer bb = ByteBuffer.allocate(getLength());
+    bb.put(id.getBytes());
+    bb.put((byte) 0);
+    bb.put(getFlags());
+    bb.put((byte) children.length);
 
-	for (String child : children) {
-	  bb.put(child.getBytes());
-	  bb.put((byte) 0);
-	}
+    for (String child : children) {
+      bb.put(child.getBytes());
+      bb.put((byte) 0);
+    }
 
-	for (ID3v2Frame frame : subframes) {
-	  try {
-		bb.put(frame.toBytes());
-	  } catch (NotSupportedException e) {
-		e.printStackTrace();
-	  }
-	}
-	return bb.array();
+    for (ID3v2Frame frame : subframes) {
+      try {
+        bb.put(frame.toBytes());
+      } catch (NotSupportedException e) {
+        e.printStackTrace();
+      }
+    }
+    return bb.array();
   }
 
   @Override
   protected int getLength() {
-	int length = 3;
-	if (id != null) length += id.length();
-	if (children != null) {
-	  length += children.length;
-	  for (String child : children) {
-		length += child.length();
-	  }
-	}
-	if (subframes != null) {
-	  for (ID3v2Frame frame : subframes) {
-		length += frame.getLength();
-	  }
-	}
-	return length;
+    int length = 3;
+    if (id != null) length += id.length();
+    if (children != null) {
+      length += children.length;
+      for (String child : children) {
+        length += child.length();
+      }
+    }
+    if (subframes != null) {
+      for (ID3v2Frame frame : subframes) {
+        length += frame.getLength();
+      }
+    }
+    return length;
   }
 
   private byte getFlags() {
-	byte b = 0;
+    byte b = 0;
 
-	if (isRoot) {
-	  b |= 0x01;
-	}
+    if (isRoot) {
+      b |= 0x01;
+    }
 
-	if (isOrdered) {
-	  b |= 0x02;
-	}
-	return b;
+    if (isOrdered) {
+      b |= 0x02;
+    }
+    return b;
   }
 }

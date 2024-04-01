@@ -5,14 +5,14 @@ public class UnsupportedTagException extends BaseException {
   private static final long serialVersionUID = 1L;
 
   public UnsupportedTagException() {
-	super();
+    super();
   }
 
   public UnsupportedTagException(String message) {
-	super(message);
+    super(message);
   }
 
   public UnsupportedTagException(String message, Throwable cause) {
-	super(message, cause);
+    super(message, cause);
   }
 }

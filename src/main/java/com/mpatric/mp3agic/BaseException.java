@@ -5,35 +5,35 @@ public class BaseException extends Exception {
   private static final long serialVersionUID = 1L;
 
   public BaseException() {
-	super();
+    super();
   }
 
   public BaseException(String message) {
-	super(message);
+    super(message);
   }
 
   public BaseException(String message, Throwable cause) {
-	super(message, cause);
+    super(message, cause);
   }
 
   public String getDetailedMessage() {
-	Throwable t = this;
-	StringBuilder s = new StringBuilder();
-	while (true) {
-	  s.append('[');
-	  s.append(t.getClass().getName());
-	  if (t.getMessage() != null && !t.getMessage().isEmpty()) {
-		s.append(": ");
-		s.append(t.getMessage());
-	  }
-	  s.append(']');
-	  t = t.getCause();
-	  if (t != null) {
-		s.append(" caused by ");
-	  } else {
-		break;
-	  }
-	}
-	return s.toString();
+    Throwable t = this;
+    StringBuilder s = new StringBuilder();
+    while (true) {
+      s.append('[');
+      s.append(t.getClass().getName());
+      if (t.getMessage() != null && !t.getMessage().isEmpty()) {
+        s.append(": ");
+        s.append(t.getMessage());
+      }
+      s.append(']');
+      t = t.getCause();
+      if (t != null) {
+        s.append(" caused by ");
+      } else {
+        break;
+      }
+    }
+    return s.toString();
   }
 }
