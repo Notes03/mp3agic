@@ -218,7 +218,7 @@ public final class BufferTools {
 	}
 
 	public static String substitute(String s, String replaceThis, String withThis) {
-		if (replaceThis.length() < 1 || !s.contains(replaceThis)) {
+		if (replaceThis.isEmpty() || !s.contains(replaceThis)) {
 			return s;
 		}
 		StringBuilder newString = new StringBuilder();

@@ -12,11 +12,11 @@ public class VersionTest {
 
 	@Test
 	public void returnsUrl() {
-		assertEquals("http://github.com/mpatric/mp3agic", Version.getUrl());
+		assertEquals("https://github.com/mpatric/mp3agic", Version.getUrl());
 	}
 
 	@Test
 	public void returnsVersionAndUrlAsString() {
-		assertEquals("UNKNOWN-SNAPSHOT - http://github.com/mpatric/mp3agic", Version.asString());
+		assertEquals("UNKNOWN-SNAPSHOT - https://github.com/mpatric/mp3agic", Version.asString());
 	}
 }

@@ -58,7 +58,7 @@ public class ID3v2PictureFrameData extends AbstractID3v2FrameData {
 		if (description != null) bytes[0] = description.getTextEncoding();
 		else bytes[0] = 0;
 		int mimeTypeLength = 0;
-		if (mimeType != null && mimeType.length() > 0) {
+		if (mimeType != null && !mimeType.isEmpty()) {
 			mimeTypeLength = mimeType.length();
 			try {
 				BufferTools.stringIntoByteBuffer(mimeType, 0, mimeTypeLength, bytes, 1);
@@ -157,8 +157,6 @@ public class ID3v2PictureFrameData extends AbstractID3v2FrameData {
 				return false;
 		} else if (!mimeType.equals(other.mimeType))
 			return false;
-		if (pictureType != other.pictureType)
-			return false;
-		return true;
-	}
+        return pictureType == other.pictureType;
+    }
 }

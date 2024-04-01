@@ -31,7 +31,7 @@ public class ID3v24Tag extends AbstractID3v2Tag {
   }
 
   public void setRecordingTime(String recTime) {
-	if (recTime != null && recTime.length() > 0) {
+	if (recTime != null && !recTime.isEmpty()) {
 	  invalidateDataLength();
 	  ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(recTime));
 	  addFrame(createFrame(ID_RECTIME, frameData.toBytes()), true);

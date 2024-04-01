@@ -281,21 +281,25 @@ public class MpegFrame {
   }
 
   private boolean findModeExtension(int modeExtension, String modeExtensionNone, String modeExtensionIntensityStereo, String modeExtensionMSStereo, String modeExtensionIntensityMSStereo) {
-	switch (modeExtension) {
-	  case 0:
-		this.modeExtension = modeExtensionNone;
-		return true;
-	  case 1:
-		this.modeExtension = modeExtensionIntensityStereo;
-		return true;
-	  case 2:
-		this.modeExtension = modeExtensionMSStereo;
-		return true;
-	  case 3:
-		this.modeExtension = modeExtensionIntensityMSStereo;
-		return true;
-	}
-	return false;
+      return switch (modeExtension) {
+          case 0 -> {
+              this.modeExtension = modeExtensionNone;
+              yield true;
+          }
+          case 1 -> {
+              this.modeExtension = modeExtensionIntensityStereo;
+              yield true;
+          }
+          case 2 -> {
+              this.modeExtension = modeExtensionMSStereo;
+              yield true;
+          }
+          case 3 -> {
+              this.modeExtension = modeExtensionIntensityMSStereo;
+              yield true;
+          }
+          default -> false;
+      };
   }
 
   private void setFields(long frameHeader) throws InvalidDataException {

@@ -98,10 +98,8 @@ public class ID3v2PopmFrameData extends AbstractID3v2FrameData {
 				return false;
 		} else if (!address.equals(other.address))
 			return false;
-		if (rating != other.rating)
-			return false;
-		return true;
-	}
+        return rating == other.rating;
+    }
 
 
 }

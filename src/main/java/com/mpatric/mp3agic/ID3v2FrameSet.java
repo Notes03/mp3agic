@@ -38,7 +38,7 @@ public class ID3v2FrameSet {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((frames == null) ? 0 : frames.hashCode());
+		result = prime * result + frames.hashCode();
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -52,16 +52,10 @@ public class ID3v2FrameSet {
 		if (getClass() != obj.getClass())
 			return false;
 		ID3v2FrameSet other = (ID3v2FrameSet) obj;
-		if (frames == null) {
-			if (other.frames != null)
-				return false;
-		} else if (!frames.equals(other.frames))
+		if (!frames.equals(other.frames))
 			return false;
 		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+			return other.id == null;
+		} else return id.equals(other.id);
 	}
 }

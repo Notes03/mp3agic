@@ -16,14 +16,14 @@ public class ID3WrapperTest {
 	ID3v1 id3v1Tag = new ID3v1TagForTesting();
 	ID3v2 id3v2Tag = new ID3v2TagForTesting();
 	ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-	assertEquals(id3v1Tag, wrapper.getId3v1Tag());
+	assertEquals(id3v1Tag, wrapper.id3v1Tag());
   }
 
   @Test
   public void returnsNullV1Tag() {
 	ID3v2 id3v2Tag = new ID3v2TagForTesting();
 	ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
-	assertEquals(null, wrapper.getId3v1Tag());
+	assertEquals(null, wrapper.id3v1Tag());
   }
   //endregion
 
@@ -33,14 +33,14 @@ public class ID3WrapperTest {
 	ID3v1 id3v1Tag = new ID3v1TagForTesting();
 	ID3v2 id3v2Tag = new ID3v2TagForTesting();
 	ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-	assertEquals(id3v2Tag, wrapper.getId3v2Tag());
+	assertEquals(id3v2Tag, wrapper.id3v2Tag());
   }
 
   @Test
   public void returnsNullV2Tag() {
 	ID3v1 id3v1Tag = new ID3v1TagForTesting();
 	ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-	assertEquals(null, wrapper.getId3v2Tag());
+	assertEquals(null, wrapper.id3v2Tag());
   }
   //endregion
 

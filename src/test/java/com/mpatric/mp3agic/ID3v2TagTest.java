@@ -595,15 +595,12 @@ public class ID3v2TagTest {
 
 		ID3v2 createTag(byte[] buffer) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
 			int majorVersion = buffer[MAJOR_VERSION_OFFSET];
-			switch (majorVersion) {
-				case 2:
-					return new ID3v22TagForTesting(buffer);
-				case 3:
-					return new ID3v23TagForTesting(buffer);
-				case 4:
-					return new ID3v24TagForTesting(buffer);
-			}
-			throw new UnsupportedTagException("Tag version not supported");
-		}
+            return switch (majorVersion) {
+                case 2 -> new ID3v22TagForTesting(buffer);
+                case 3 -> new ID3v23TagForTesting(buffer);
+                case 4 -> new ID3v24TagForTesting(buffer);
+                default -> throw new UnsupportedTagException("Tag version not supported");
+            };
+        }
 	}
 }

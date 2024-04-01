@@ -52,7 +52,7 @@ public class ID3v2UrlFrameData extends AbstractID3v2FrameData {
 		} else {
 			bytes[marker++] = 0;
 		}
-		if (url != null && url.length() > 0) {
+		if (url != null && !url.isEmpty()) {
 			try {
 				BufferTools.stringIntoByteBuffer(url, 0, url.length(), bytes, marker);
 			} catch (UnsupportedEncodingException e) {
@@ -110,10 +110,7 @@ public class ID3v2UrlFrameData extends AbstractID3v2FrameData {
 		} else if (!description.equals(other.description))
 			return false;
 		if (url == null) {
-			if (other.url != null)
-				return false;
-		} else if (!url.equals(other.url))
-			return false;
-		return true;
-	}
+            return other.url == null;
+		} else return url.equals(other.url);
+    }
 }
