@@ -700,6 +700,30 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
   }
 
   @Override
+  public String getCustomText(String description) {
+    ID3v2TXXXFrameData frameData = ID3v2TXXXFrameData.extract(
+      frameSets,
+      unsynchronisation,
+      description);
+
+    if (frameData != null) {
+      return frameData.getValue().toString();
+    }
+
+    return null;
+  }
+
+  @Override
+  public void setCustomText(String description, String value) {
+    ID3v2TXXXFrameData.createOrAddField(
+      frameSets,
+      unsynchronisation,
+      description,
+      value,
+      true);
+  }
+
+  @Override
   public String getAudiofileUrl() {
     ID3v2WWWFrameData frameData = extractWWWFrameData(ID_AUDIOFILE_URL);
     if (frameData != null) return frameData.getUrl();

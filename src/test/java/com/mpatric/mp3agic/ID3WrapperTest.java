@@ -1365,6 +1365,15 @@ public class ID3WrapperTest {
     }
 
     @Override
+    public String getCustomText(String description) {
+      return null;
+    }
+
+    @Override
+    public void setCustomText(String description, String value) {
+    }
+
+    @Override
     public void clearAlbumImage() {
 
     }

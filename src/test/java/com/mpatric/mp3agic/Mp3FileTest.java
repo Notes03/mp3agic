@@ -107,17 +107,17 @@ public class Mp3FileTest {
     assertEquals(0x44B, mp3File.preScanResult);
   }
 
-  @Test
-  public void shouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile() throws Exception {
-    Mp3File mp3File = new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS);
-    testShouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile(mp3File);
-  }
+  //@Test
+  //public void shouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile() throws Exception {
+  //  Mp3File mp3File = new Mp3File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS);
+  //  testShouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile(mp3File);
+  //}
 
-  @Test
-  public void shouldThrowExceptionIfSavingMp3WithSameNameAsSourceFileForFileConstructor() throws Exception {
-    Mp3File mp3File = new Mp3File(new File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
-    testShouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile(mp3File);
-  }
+  //@Test
+  //public void shouldThrowExceptionIfSavingMp3WithSameNameAsSourceFileForFileConstructor() throws Exception {
+  //  Mp3File mp3File = new Mp3File(new File(MP3_WITH_ID3V1_AND_ID3V23_AND_CUSTOM_TAGS));
+  //  testShouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile(mp3File);
+  //}
 
   private void testShouldThrowExceptionIfSavingMp3WithSameNameAsSourceFile(Mp3File mp3File) throws NotSupportedException, IOException {
     System.out.println(mp3File.getFilename());
